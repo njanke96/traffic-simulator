@@ -19,7 +19,7 @@ albedo_color = Color( 0.780392, 0, 0, 1 )
 [node name="WorldEnvironment" type="WorldEnvironment" parent="Env"]
 environment = ExtResource( 2 )
 
-[node name="DirectionalLight" type="DirectionalLight" parent="Env"]
+[node name="WorldLight" type="DirectionalLight" parent="Env"]
 transform = Transform( 1, 0, 0, 0, 0.5, 0.866025, 0, -0.866025, 0.5, 0, 6, 6 )
 light_energy = 2.0
 shadow_enabled = true

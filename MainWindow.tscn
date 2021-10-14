@@ -1,0 +1,100 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://Scripts/Ui/MainWindow.cs" type="Script" id=1]
+[ext_resource path="res://Scripts/Ui/DynamicViewport.cs" type="Script" id=2]
+
+[node name="Root" type="Control"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="MainWindow" type="Panel" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="OuterMargin" type="MarginContainer" parent="MainWindow"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+custom_constants/margin_right = 8
+custom_constants/margin_top = 8
+custom_constants/margin_left = 8
+custom_constants/margin_bottom = 8
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="MainContainer" type="VBoxContainer" parent="MainWindow/OuterMargin"]
+margin_left = 8.0
+margin_top = 8.0
+margin_right = 1016.0
+margin_bottom = 592.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="MenuButtons" type="HBoxContainer" parent="MainWindow/OuterMargin/MainContainer"]
+margin_right = 1008.0
+margin_bottom = 20.0
+size_flags_horizontal = 3
+
+[node name="File" type="MenuButton" parent="MainWindow/OuterMargin/MainContainer/MenuButtons"]
+margin_right = 35.0
+margin_bottom = 20.0
+text = "File"
+switch_on_hover = true
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Help" type="MenuButton" parent="MainWindow/OuterMargin/MainContainer/MenuButtons"]
+margin_left = 39.0
+margin_right = 81.0
+margin_bottom = 20.0
+text = "Help"
+switch_on_hover = true
+
+[node name="VPSidebar" type="HSplitContainer" parent="MainWindow/OuterMargin/MainContainer"]
+margin_top = 24.0
+margin_right = 1008.0
+margin_bottom = 558.0
+size_flags_vertical = 3
+
+[node name="ViewportContainer" type="ViewportContainer" parent="MainWindow/OuterMargin/MainContainer/VPSidebar"]
+margin_right = 800.0
+margin_bottom = 534.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="Viewport" type="Viewport" parent="MainWindow/OuterMargin/MainContainer/VPSidebar/ViewportContainer"]
+script = ExtResource( 2 )
+
+[node name="SideBar" type="VBoxContainer" parent="MainWindow/OuterMargin/MainContainer/VPSidebar"]
+margin_left = 812.0
+margin_right = 1008.0
+margin_bottom = 534.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+size_flags_stretch_ratio = 0.25
+
+[node name="Label" type="Label" parent="MainWindow/OuterMargin/MainContainer/VPSidebar/SideBar"]
+margin_right = 196.0
+margin_bottom = 14.0
+text = "Settings Placeholder"
+
+[node name="StatusContainer" type="MarginContainer" parent="MainWindow/OuterMargin/MainContainer"]
+margin_top = 562.0
+margin_right = 1008.0
+margin_bottom = 584.0
+custom_constants/margin_top = 8
+
+[node name="Label" type="Label" parent="MainWindow/OuterMargin/MainContainer/StatusContainer"]
+margin_top = 8.0
+margin_right = 1008.0
+margin_bottom = 22.0
+text = "Status Text"

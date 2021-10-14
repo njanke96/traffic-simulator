@@ -41,9 +41,6 @@ namespace CSC473.Scripts
             
             _origin = new Vector3(0, 20, 40);
             _velocity = Vector3.Zero;
-            
-            // Capture the mouse
-            Input.SetMouseMode(Input.MouseMode.Captured);
         }
 
         public override void _Input(InputEvent @event)
