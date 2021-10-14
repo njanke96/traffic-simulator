@@ -8,13 +8,13 @@ namespace CSC473.Scripts
     /// </summary>
     public class CamController : Node
     {
+        private StateManager _stateManager;
+        
         // camera acceleration rate
         private const float CameraAccel = 20.0f;
         
         // max camera speed before modifier
         private const float MaxCameraSpeed = 10.0f;
-
-        public double MouseSensitivity = 5.0;
 
         // origin to translate the camera to
         private Vector3 _origin;
@@ -36,6 +36,8 @@ namespace CSC473.Scripts
 
         public override void _Ready()
         {
+            _stateManager = GetNode<StateManager>("/root/StateManager");
+            
             // reference to the camera
             _camera = GetParent<Camera>();
             
@@ -47,9 +49,14 @@ namespace CSC473.Scripts
         {
             if (@event is InputEventMouseMotion eventMouseMotion)
             {
+                if (!_stateManager.ControllingCamera)
+                    return;
+                
+                float mSens = _stateManager.SMouseSensitivity;
+                
                 // pitch and yaw
-                double newPitch = _pitch - (MouseSensitivity / 10.0) * eventMouseMotion.Relative.y;
-                double newYaw = _yaw + (MouseSensitivity / 10.0) * eventMouseMotion.Relative.x;
+                double newPitch = _pitch - (mSens / 10.0) * eventMouseMotion.Relative.y;
+                double newYaw = _yaw + (mSens / 10.0) * eventMouseMotion.Relative.x;
 
                 // clamping
                 newPitch = newPitch > 90.0 ? 90.0 : newPitch;
@@ -62,6 +69,27 @@ namespace CSC473.Scripts
 
                 _pitch = newPitch;
                 _yaw = newYaw;
+            }
+            else if (@event is InputEventKey)
+            {
+                if (Input.IsActionPressed("cam_takecontrol"))
+                {
+                    if (!_stateManager.ControllingCamera)
+                    {
+                        Input.SetMouseMode(Input.MouseMode.Captured);
+                        _stateManager.ControllingCamera = true;
+                    }
+                    else
+                    {
+                        Input.SetMouseMode(Input.MouseMode.Visible);
+                        _stateManager.ControllingCamera = false;
+                    }
+                }
+                else if (Input.IsActionPressed("ui_cancel"))
+                {
+                    Input.SetMouseMode(Input.MouseMode.Visible);
+                    _stateManager.ControllingCamera = false;
+                }
             }
         }
 
@@ -84,10 +112,10 @@ namespace CSC473.Scripts
 
             //// Camera velocity
 
-            bool w = Input.IsActionPressed("cam_forward"),
-                a = Input.IsActionPressed("cam_left"),
-                s = Input.IsActionPressed("cam_backward"),
-                d = Input.IsActionPressed("cam_right");
+            bool w = Input.IsActionPressed("cam_forward") && _stateManager.ControllingCamera,
+                a = Input.IsActionPressed("cam_left") && _stateManager.ControllingCamera,
+                s = Input.IsActionPressed("cam_backward") && _stateManager.ControllingCamera,
+                d = Input.IsActionPressed("cam_right") && _stateManager.ControllingCamera;
 
             if (s && !w)
             {
@@ -160,7 +188,7 @@ namespace CSC473.Scripts
                 _velocity = _velocity.Normalized() * _cameraMaxSpeed;
             
             // modifier
-            if (Input.IsActionPressed("cam_speed_modifier"))
+            if (Input.IsActionPressed("cam_speed_modifier") && _stateManager.ControllingCamera)
                 _cameraMaxSpeed = MaxCameraSpeed * 2;
             else
                 _cameraMaxSpeed = MaxCameraSpeed;

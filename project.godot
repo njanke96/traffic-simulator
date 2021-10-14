@@ -14,6 +14,10 @@ config/name="CSC473"
 run/main_scene="res://MainWindow.tscn"
 config/icon="res://icon.png"
 
+[autoload]
+
+StateManager="*res://Scripts/StateManager.cs"
+
 [input]
 
 cam_forward={
