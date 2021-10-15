@@ -1,8 +1,7 @@
-[gd_scene load_steps=4 format=2]
+[gd_scene load_steps=3 format=2]
 
 [ext_resource path="res://Scripts/Ui/MainWindow.cs" type="Script" id=1]
 [ext_resource path="res://Scripts/Ui/DynamicViewport.cs" type="Script" id=2]
-[ext_resource path="res://Scripts/Ui/SideBar.cs" type="Script" id=3]
 
 [node name="Root" type="Control"]
 anchor_right = 1.0
@@ -85,7 +84,6 @@ margin_bottom = 534.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
 size_flags_stretch_ratio = 0.25
-script = ExtResource( 3 )
 
 [node name="LMouseSens" type="Label" parent="MainWindow/OuterMargin/MainContainer/VPSidebar/SideBar"]
 margin_right = 196.0
