@@ -20,7 +20,7 @@ namespace CSC473.Scripts
             set
             {
                 _controllingCamera = value;
-                _statusBar.Text = value ? "Press 'C' or Escape to release camera control. WASD to pan." 
+                _statusBar.Text = value ? "Press 'C' or Escape to release camera control. WASD to pan. Shift to pan faster." 
                     : "Press 'C' to control the camera.";
             }
         }
