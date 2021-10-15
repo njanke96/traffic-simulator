@@ -6,7 +6,5 @@
 background_mode = 2
 background_sky = ExtResource( 1 )
 ambient_light_color = Color( 1, 0.94902, 0.776471, 1 )
-ambient_light_energy = 1.5
-ambient_light_sky_contribution = 0.51
 fog_depth_begin = 0.0
 ssao_enabled = true

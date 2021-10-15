@@ -75,6 +75,7 @@ size_flags_vertical = 3
 [node name="Viewport" type="Viewport" parent="MainWindow/OuterMargin/MainContainer/VPSidebar/ViewportContainer"]
 handle_input_locally = false
 render_target_update_mode = 3
+shadow_atlas_size = 4096
 script = ExtResource( 2 )
 
 [node name="SideBar" type="VBoxContainer" parent="MainWindow/OuterMargin/MainContainer/VPSidebar"]
