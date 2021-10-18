@@ -1,3 +1,4 @@
+using CSC473.Lib;
 using Godot;
 
 namespace CSC473.Scripts.Ui
@@ -85,10 +86,64 @@ namespace CSC473.Scripts.Ui
             // id is the id of the item
             FileMenuItem fmId = (FileMenuItem) id;
 
-            if (fmId == FileMenuItem.Load)
+            // 0.1sec timer to prevent winapi file dialogs glitching out
+            Timer tmr = new Timer();
+            tmr.WaitTime = 0.1f;
+            tmr.OneShot = true;
+            tmr.Autostart = true;
+
+            switch (fmId)
             {
-                GD.Print("Load callback!");
+                case FileMenuItem.Load:
+                {
+                    tmr.Connect("timeout", this, nameof(Load));
+                    AddChild(tmr);
+                    break;
+                }
+                case FileMenuItem.Save:
+                {
+                    tmr.Connect("timeout", this, nameof(SaveAs));
+                    AddChild(tmr);
+                    break;
+                }
             }
+        }
+
+        // for godot filedialog
+        public void _OpenFileSelected(string path)
+        {
+            GD.Print(path);
+        }
+
+        // for godot filedialog
+        public void _SaveFileSelected(string path)
+        {
+            GD.Print(path);
+        }
+
+        // // public
+        
+        // return value of OpenFileDialog and SaveFileDialog is complicated
+        // non-empty string means it was a windows dialog and a file was selected
+        // null means it was a windows dialog and no file was selected
+        // empty string means we're not on windows and a non-blocking file dialog has opened.
+
+        public void Load()
+        {
+            PlatformFileDialog.FileFilter[] filters = new PlatformFileDialog.FileFilter[1];
+            filters[0] = new PlatformFileDialog.FileFilter();
+            filters[0].Desc = "Layout";
+            filters[0].Ext = "*.tsl";
+            GD.Print(PlatformFileDialog.OpenFileDialog(filters, "Load Layout", this, nameof(_OpenFileSelected)));
+        }
+
+        public void SaveAs()
+        {
+            PlatformFileDialog.FileFilter[] filters = new PlatformFileDialog.FileFilter[1];
+            filters[0] = new PlatformFileDialog.FileFilter();
+            filters[0].Desc = "Layout";
+            filters[0].Ext = "*.tsl";
+            GD.Print(PlatformFileDialog.SaveFileDialog(filters, "Save Layout", this, nameof(_OpenFileSelected)));
         }
 
         // // statics
