@@ -20,8 +20,11 @@ namespace CSC473.Scripts
             set
             {
                 _controllingCamera = value;
-                _statusBar.Text = value ? "Press 'C' or Escape to release camera control. WASD to pan. Shift to pan faster." 
-                    : "Press 'C' to control the camera.";
+                if (_statusBar != null)
+                {
+                    _statusBar.Text = value ? "Press 'C' or Escape to release camera control. WASD to pan. Shift to pan faster." 
+                        : "Press 'C' to control the camera.";
+                }
             }
         }
         
@@ -35,7 +38,10 @@ namespace CSC473.Scripts
         /// </summary>
         public override void _Ready()
         {
-            _statusBar = GetNode<Label>("/root/Root/MainWindow/OuterMargin/MainContainer/StatusContainer/Label");
+            _statusBar = GetNodeOrNull<Label>("/root/Root/MainWindow/OuterMargin/MainContainer/StatusContainer/Label");
+
+            if (_statusBar == null)
+                return;
             
             // initial status message
             _statusBar.Text = "Press 'C' to control the camera.";

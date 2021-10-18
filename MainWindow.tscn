@@ -1,11 +1,20 @@
-[gd_scene load_steps=3 format=2]
+[gd_scene load_steps=4 format=2]
 
 [ext_resource path="res://Scripts/Ui/MainWindow.cs" type="Script" id=1]
 [ext_resource path="res://Scripts/Ui/DynamicViewport.cs" type="Script" id=2]
 
+[sub_resource type="GDScript" id=1]
+script/source = "extends ViewportContainer
+
+
+func _gui_input(event):
+	get_node('Viewport').unhandled_input(event)
+"
+
 [node name="Root" type="Control"]
 anchor_right = 1.0
 anchor_bottom = 1.0
+mouse_filter = 1
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -13,6 +22,7 @@ __meta__ = {
 [node name="MainWindow" type="Panel" parent="."]
 anchor_right = 1.0
 anchor_bottom = 1.0
+mouse_filter = 1
 script = ExtResource( 1 )
 __meta__ = {
 "_edit_use_anchors_": false
@@ -21,6 +31,7 @@ __meta__ = {
 [node name="OuterMargin" type="MarginContainer" parent="MainWindow"]
 anchor_right = 1.0
 anchor_bottom = 1.0
+mouse_filter = 1
 custom_constants/margin_right = 8
 custom_constants/margin_top = 8
 custom_constants/margin_left = 8
@@ -63,17 +74,21 @@ switch_on_hover = true
 margin_top = 24.0
 margin_right = 1008.0
 margin_bottom = 558.0
+mouse_filter = 1
 size_flags_vertical = 3
 
 [node name="ViewportContainer" type="ViewportContainer" parent="MainWindow/OuterMargin/MainContainer/VPSidebar"]
 margin_right = 800.0
 margin_bottom = 534.0
+mouse_filter = 1
 size_flags_horizontal = 3
 size_flags_vertical = 3
+script = SubResource( 1 )
 
 [node name="Viewport" type="Viewport" parent="MainWindow/OuterMargin/MainContainer/VPSidebar/ViewportContainer"]
 handle_input_locally = false
 render_target_update_mode = 3
+physics_object_picking = true
 shadow_atlas_size = 4096
 script = ExtResource( 2 )
 
