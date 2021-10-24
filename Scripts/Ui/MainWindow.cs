@@ -91,6 +91,8 @@ namespace CSC473.Scripts.Ui
             tmr.WaitTime = 0.1f;
             tmr.OneShot = true;
             tmr.Autostart = true;
+            
+            // TODO: block input in main window when win32 file dialog open
 
             switch (fmId)
             {
