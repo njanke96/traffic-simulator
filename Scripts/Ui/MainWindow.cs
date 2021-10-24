@@ -16,6 +16,7 @@ namespace CSC473.Scripts.Ui
 
         private StateManager _stateManager;
         private Viewport _viewport3d;
+        private Label _statusLabel;
 
         private PopupMenu _fileMenu;
 
@@ -29,6 +30,8 @@ namespace CSC473.Scripts.Ui
 
             _fileMenu = GetNode<MenuButton>("OuterMargin/MainContainer/MenuButtons/File").GetPopup();
 
+            _statusLabel = GetNode<Label>("OuterMargin/MainContainer/StatusContainer/Label");
+
             // preload 3d viewport scene (could use ResourceInteractiveLoader in future)
             Node root3d = ResourceLoader.Load<PackedScene>("res://3DView.tscn").Instance();
             _viewport3d.AddChild(root3d);
@@ -40,6 +43,10 @@ namespace CSC473.Scripts.Ui
             mSensSlider.Connect("value_changed", this, nameof(_MouseSensChanged));
             GetNode<Label>("OuterMargin/MainContainer/VPSidebar/SideBar/LMouseSens")
                 .Text = "Mouse Sensitivity: " + mSensSlider.Value;
+            
+            // controlling camera status label
+            _stateManager.Connect("ControllingCameraChanged", this, nameof(_ControllingCameraChanged));
+            _statusLabel.Text = "Press C to control the camera.";
 
             // populate menubar
             _fileMenu.AddItem("Load Layout", (int) FileMenuItem.Load);
@@ -81,6 +88,13 @@ namespace CSC473.Scripts.Ui
                 .Text = "Mouse Sensitivity: " + value;
         }
 
+        public void _ControllingCameraChanged(bool controlling)
+        {
+            _statusLabel.Text = 
+                controlling ? "Press C or Esc to stop controlling the camera. WASD to move the camera, holding shift moves the camera faster." 
+                    : "Press C to control the camera.";
+        }
+
         public void _FileMenuCallback(int id)
         {
             // id is the id of the item
@@ -91,8 +105,6 @@ namespace CSC473.Scripts.Ui
             tmr.WaitTime = 0.1f;
             tmr.OneShot = true;
             tmr.Autostart = true;
-            
-            // TODO: block input in main window when win32 file dialog open
 
             switch (fmId)
             {

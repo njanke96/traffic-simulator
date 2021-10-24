@@ -9,10 +9,12 @@ namespace CSC473.Scripts
     {
         // // Public state
         
-        // settings
+        // state that do not trigger signals
+        
         public float SMouseSensitivity = 5.0f;
         
-        // camera
+        // state that trigger signals
+        
         private bool _controllingCamera;
         public bool ControllingCamera
         {
@@ -20,31 +22,16 @@ namespace CSC473.Scripts
             set
             {
                 _controllingCamera = value;
-                if (_statusBar != null)
-                {
-                    _statusBar.Text = value ? "Press 'C' or Escape to release camera control. WASD to pan. Shift to pan faster." 
-                        : "Press 'C' to control the camera.";
-                }
+                EmitSignal(nameof(ControllingCameraChanged), value);
             }
         }
-        
-        // // Private members
 
-        private Label _statusBar;
-        
-        /// <summary>
-        /// Called when this singleton is initialized. This can be considered the high-level entry point of
-        /// this application.
-        /// </summary>
-        public override void _Ready()
-        {
-            _statusBar = GetNodeOrNull<Label>("/root/Root/MainWindow/OuterMargin/MainContainer/StatusContainer/Label");
+        // // signals
 
-            if (_statusBar == null)
-                return;
-            
-            // initial status message
-            _statusBar.Text = "Press 'C' to control the camera.";
-        }
+        [Signal]
+        public delegate void ControllingCameraChanged(bool enabled);
+        
+        // // overrides
+        
     }
 }
