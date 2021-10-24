@@ -31,11 +31,11 @@ namespace CSC473.Scripts
         public void _WorkingPlaneChanged(int y)
         {
             // plane visibility
-            bool visibility = (y > 0);
+            bool visibility = y > 0;
             _topPlane.Visible = visibility;
             _bottomPlane.Visible = visibility;
 
-            Transform t = Transform;
+            Transform t = Transform; // this.Transform
             t.origin.y = y;
             Transform = t;
         }
