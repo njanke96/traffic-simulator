@@ -1,0 +1,4 @@
+These are 3d vehicle models from kenney.nl.
+
+License: CC0 1.0 https://creativecommons.org/publicdomain/zero/1.0/
+https://www.kenney.nl/assets/car-kit

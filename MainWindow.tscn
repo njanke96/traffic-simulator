@@ -133,10 +133,9 @@ text = "Working Plane (Elev)"
 margin_top = 68.0
 margin_right = 196.0
 margin_bottom = 84.0
-max_value = 20.0
-step = 5.0
+max_value = 10.0
 scrollable = false
-tick_count = 5
+tick_count = 11
 ticks_on_borders = true
 
 [node name="StatusContainer" type="MarginContainer" parent="MainWindow/OuterMargin/MainContainer"]

@@ -1,12 +1,13 @@
-[gd_scene load_steps=13 format=2]
+[gd_scene load_steps=14 format=2]
 
 [ext_resource path="res://Assets/Textures/baked_4k_ground.material" type="Material" id=1]
 [ext_resource path="res://Assets/WorldEnv.tres" type="Environment" id=2]
 [ext_resource path="res://Scripts/CamController.cs" type="Script" id=3]
 [ext_resource path="res://Scripts/ClickArea.cs" type="Script" id=4]
+[ext_resource path="res://Assets/Models/Vehicles/sedan.glb" type="PackedScene" id=5]
 
 [sub_resource type="BoxShape" id=1]
-extents = Vector3( 200, 1, 200 )
+extents = Vector3( 100, 1, 100 )
 
 [sub_resource type="SpatialMaterial" id=2]
 flags_transparent = true
@@ -54,19 +55,19 @@ transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, 0 )
 shape = SubResource( 1 )
 
 [node name="TopPlane" type="MeshInstance" parent="ClickArea"]
-transform = Transform( 200, 0, 0, 0, 200, 0, 0, 0, 200, 0, 0.1, 0 )
+transform = Transform( 100, 0, 0, 0, 100, 0, 0, 0, 100, 0, 0.1, 0 )
 visible = false
 mesh = SubResource( 3 )
 material/0 = null
 
 [node name="BottomPlane" type="MeshInstance" parent="ClickArea"]
-transform = Transform( 200, 0, 0, 0, 200, 0, 0, 0, 200, 0, -0.0999999, 0 )
+transform = Transform( 100, 0, 0, 0, 100, 0, 0, 0, 100, 0, -0.0999999, 0 )
 visible = false
 mesh = SubResource( 5 )
 material/0 = null
 
 [node name="Ground" type="MeshInstance" parent="."]
-transform = Transform( 200, 0, 0, 0, 200, 0, 0, 0, 200, 0, 0, 0 )
+transform = Transform( 100, 0, 0, 0, 100, 0, 0, 0, 100, 0, 0, 0 )
 mesh = SubResource( 6 )
 material/0 = ExtResource( 1 )
 
@@ -95,3 +96,6 @@ __meta__ = {
 
 [node name="CamController" type="Node" parent="Camera"]
 script = ExtResource( 3 )
+
+[node name="sedan" parent="." instance=ExtResource( 5 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 20, 0, -14 )
