@@ -26,12 +26,26 @@ namespace CSC473.Scripts
             }
         }
 
+        private int _workingPlane; // = 0
+        public int WorkingPlane
+        {
+            get => _workingPlane;
+            set
+            {
+                _workingPlane = value;
+                EmitSignal(nameof(WorkingPlaneChanged), value);
+            }
+        }
+
         // // signals
 
         [Signal]
         public delegate void ControllingCameraChanged(bool enabled);
-        
+
+        [Signal]
+        public delegate void WorkingPlaneChanged(int plane);
+
         // // overrides
-        
+
     }
 }

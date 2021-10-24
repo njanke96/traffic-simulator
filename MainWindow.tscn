@@ -93,7 +93,7 @@ physics_object_picking = true
 shadow_atlas_size = 4096
 script = ExtResource( 2 )
 
-[node name="SideBar" type="VBoxContainer" parent="MainWindow/OuterMargin/MainContainer/VPSidebar"]
+[node name="ScrollContainer" type="ScrollContainer" parent="MainWindow/OuterMargin/MainContainer/VPSidebar"]
 margin_left = 812.0
 margin_right = 1008.0
 margin_bottom = 534.0
@@ -101,18 +101,41 @@ size_flags_horizontal = 3
 size_flags_vertical = 3
 size_flags_stretch_ratio = 0.25
 
-[node name="LMouseSens" type="Label" parent="MainWindow/OuterMargin/MainContainer/VPSidebar/SideBar"]
+[node name="SideBar" type="VBoxContainer" parent="MainWindow/OuterMargin/MainContainer/VPSidebar/ScrollContainer"]
+margin_right = 196.0
+margin_bottom = 84.0
+size_flags_horizontal = 3
+custom_constants/separation = 8
+
+[node name="LMouseSens" type="Label" parent="MainWindow/OuterMargin/MainContainer/VPSidebar/ScrollContainer/SideBar"]
 margin_right = 196.0
 margin_bottom = 14.0
 text = "Mouse Sensitivity"
 
-[node name="MouseSens" type="HSlider" parent="MainWindow/OuterMargin/MainContainer/VPSidebar/SideBar"]
-margin_top = 18.0
+[node name="MouseSens" type="HSlider" parent="MainWindow/OuterMargin/MainContainer/VPSidebar/ScrollContainer/SideBar"]
+margin_top = 22.0
 margin_right = 196.0
-margin_bottom = 34.0
+margin_bottom = 38.0
 max_value = 10.0
 step = 0.5
 value = 5.0
+scrollable = false
+tick_count = 5
+ticks_on_borders = true
+
+[node name="LWorkingPlane" type="Label" parent="MainWindow/OuterMargin/MainContainer/VPSidebar/ScrollContainer/SideBar"]
+margin_top = 46.0
+margin_right = 196.0
+margin_bottom = 60.0
+text = "Working Plane (Elev)"
+
+[node name="WorkingPlane" type="HSlider" parent="MainWindow/OuterMargin/MainContainer/VPSidebar/ScrollContainer/SideBar"]
+margin_top = 68.0
+margin_right = 196.0
+margin_bottom = 84.0
+max_value = 20.0
+step = 5.0
+scrollable = false
 tick_count = 5
 ticks_on_borders = true
 

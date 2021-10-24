@@ -17,6 +17,7 @@ namespace CSC473.Scripts.Ui
         private StateManager _stateManager;
         private Viewport _viewport3d;
         private Label _statusLabel;
+        private Label _workingPlaneLabel;
 
         private PopupMenu _fileMenu;
 
@@ -37,12 +38,21 @@ namespace CSC473.Scripts.Ui
             _viewport3d.AddChild(root3d);
 
             _stateManager = GetNode<StateManager>("/root/StateManager");
+            
+            // sidebar node path
+            string sidebarPath = "OuterMargin/MainContainer/VPSidebar/ScrollContainer/SideBar";
 
             // mouse sensitivity settings
-            Slider mSensSlider = GetNode<Slider>("OuterMargin/MainContainer/VPSidebar/SideBar/MouseSens");
+            Slider mSensSlider = GetNode<Slider>(sidebarPath + "/MouseSens");
             mSensSlider.Connect("value_changed", this, nameof(_MouseSensChanged));
-            GetNode<Label>("OuterMargin/MainContainer/VPSidebar/SideBar/LMouseSens")
+            GetNode<Label>(sidebarPath + "/LMouseSens")
                 .Text = "Mouse Sensitivity: " + mSensSlider.Value;
+            
+            // working plane setting
+            _workingPlaneLabel = GetNode<Label>(sidebarPath + "/LWorkingPlane");
+            _workingPlaneLabel.Text = _workingPlaneLabel.Text + ": " + _stateManager.WorkingPlane;
+            GetNode<Slider>(sidebarPath + "/WorkingPlane")
+                .Connect("value_changed", this, nameof(_WorkingPlaneChanged));
             
             // controlling camera status label
             _stateManager.Connect("ControllingCameraChanged", this, nameof(_ControllingCameraChanged));
@@ -84,8 +94,17 @@ namespace CSC473.Scripts.Ui
             _stateManager.SMouseSensitivity = value;
 
             // update label
-            GetNode<Label>("OuterMargin/MainContainer/VPSidebar/SideBar/LMouseSens")
+            GetNode<Label>("OuterMargin/MainContainer/VPSidebar/ScrollContainer/SideBar/LMouseSens")
                 .Text = "Mouse Sensitivity: " + value;
+        }
+
+        public void _WorkingPlaneChanged(float value)
+        {
+            // this is always expected to be x.0
+            int iValue = (int) value;
+
+            _stateManager.WorkingPlane = iValue;
+            _workingPlaneLabel.Text = "Working Plane (Elev): " + iValue;
         }
 
         public void _ControllingCameraChanged(bool controlling)
