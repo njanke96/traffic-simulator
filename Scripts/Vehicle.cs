@@ -27,6 +27,7 @@ namespace CSC473.Scripts
         }
 
         // rigidbody properties
+        private readonly float _mass;
 
         // body mesh
         private MeshInstance _body;
@@ -42,7 +43,6 @@ namespace CSC473.Scripts
         private readonly float _strutLen;
         
         // other attributes
-        private readonly float _mass;
 
         /// <summary>
         /// The default constructor is intended for debugging, when attaching this script to a VehicleBody
@@ -104,7 +104,7 @@ namespace CSC473.Scripts
             // rigidbody attributes
             PhysicsMaterialOverride = new PhysicsMaterial();
             PhysicsMaterialOverride.Friction = 0.5f;
-            Mass = 100.0f;
+            Mass = _mass;
 
             // get static wheel meshes
             // wheels are flipped because of the rotation
