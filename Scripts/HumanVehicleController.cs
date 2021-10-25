@@ -7,11 +7,11 @@ namespace CSC473.Scripts
     /// </summary>
     public class HumanVehicleController : Node
     {
-        private VehicleBody _vehicle;
+        private Vehicle _vehicle;
 
         public override void _Ready()
         {
-            _vehicle = GetParent<VehicleBody>();
+            _vehicle = GetParent<Vehicle>();
         }
 
         public override void _PhysicsProcess(float delta)
@@ -28,7 +28,7 @@ namespace CSC473.Scripts
 
             if (accel > 0.0)
             {
-                _vehicle.EngineForce = 40f * accel;
+                _vehicle.EngineForce = _vehicle.EnginePerf * accel;
                 _vehicle.Brake = 0f;
             }
             else
@@ -37,7 +37,7 @@ namespace CSC473.Scripts
                 _vehicle.Brake = -1f * accel;
             }
 
-            _vehicle.Steering = 0.5f * steer;
+            _vehicle.Steering = _vehicle.SteerRatio * steer;
         }
     }
 }

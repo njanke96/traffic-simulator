@@ -7,6 +7,10 @@ namespace CSC473.Scripts
     /// </summary>
     public class Vehicle : VehicleBody
     {
+        // engine performance and steering ratio for controller
+        public float EnginePerf = 50f;
+        public float SteerRatio = 0.5f;
+        
         // body color
         private Color _color;
 
@@ -36,6 +40,9 @@ namespace CSC473.Scripts
         private readonly float _wheelRadius;
         private readonly float _suspTravel;
         private readonly float _strutLen;
+        
+        // other attributes
+        private readonly float _mass;
 
         /// <summary>
         /// The default constructor is intended for debugging, when attaching this script to a VehicleBody
@@ -49,6 +56,7 @@ namespace CSC473.Scripts
             _wheelRadius = 0.3f;
             _suspTravel = 2.0f;
             _strutLen = 0.1f;
+            _mass = 100f;
         }
 
         /// <summary>
@@ -56,19 +64,26 @@ namespace CSC473.Scripts
         /// </summary>
         /// <param name="modelPath">Path to the model. Must be one of kenney's low poly cars in glb format.</param>
         /// <param name="collisionShapePath">Path to collision shape scene.</param>
+        /// <param name="enginePerf"></param>
+        /// <param name="steerRatio"></param>
         /// <param name="colorMaterialIndex">Material slot index for the main color material.</param>
         /// <param name="wheelRadius">Radius of the wheel.</param>
         /// <param name="suspTravel">Total suspension travel</param>
         /// <param name="strutLen">Total strut length.</param>
-        public Vehicle(string modelPath, string collisionShapePath, int colorMaterialIndex = 1,
-            float wheelRadius = 0.3f, float suspTravel = 2.0f, float strutLen = 0.1f)
+        /// <param name="mass">The mass. For reference, a small sedan seems to be 100 units of mass.</param>
+        public Vehicle(string modelPath, string collisionShapePath, float enginePerf, float steerRatio, 
+            int colorMaterialIndex = 1, float wheelRadius = 0.3f, float suspTravel = 2.0f, float strutLen = 0.1f, 
+            float mass = 100f)
         {
             _modelPath = modelPath;
             _collisionShapePath = collisionShapePath;
+            EnginePerf = enginePerf;
+            SteerRatio = steerRatio;
             _colorMaterialIndex = colorMaterialIndex;
             _wheelRadius = wheelRadius;
             _suspTravel = suspTravel;
             _strutLen = strutLen;
+            _mass = mass;
         }
 
         public override void _Ready()
@@ -89,7 +104,7 @@ namespace CSC473.Scripts
             // rigidbody attributes
             PhysicsMaterialOverride = new PhysicsMaterial();
             PhysicsMaterialOverride.Friction = 0.5f;
-            
+            Mass = 100.0f;
 
             // get static wheel meshes
             // wheels are flipped because of the rotation
@@ -147,6 +162,7 @@ namespace CSC473.Scripts
                 whl.WheelRadius = _wheelRadius;
                 whl.WheelRestLength = _strutLen;
                 whl.SuspensionStiffness = 40f;
+                whl.WheelFrictionSlip = 2f;
             }
 
             // add VehicleWheels as children of this VehicleBody
