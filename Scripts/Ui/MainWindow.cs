@@ -6,7 +6,7 @@ namespace CSC473.Scripts.Ui
     public class MainWindow : Panel
     {
         // Menu item ids
-        enum FileMenuItem
+        private enum FileMenuItem
         {
             Load,
             Save,
@@ -17,7 +17,8 @@ namespace CSC473.Scripts.Ui
         private StateManager _stateManager;
         private Viewport _viewport3d;
         private Label _statusLabel;
-        private Label _workingPlaneLabel;
+
+        private Label _hintObjRot;
 
         private PopupMenu _fileMenu;
 
@@ -33,6 +34,8 @@ namespace CSC473.Scripts.Ui
 
             _statusLabel = GetNode<Label>("OuterMargin/MainContainer/StatusContainer/Label");
 
+            _hintObjRot = GetNode<Label>("OuterMargin/MainContainer/VPSidebar/ScrollContainer/SideBar/LObjRotation");
+
             // preload 3d viewport scene (could use ResourceInteractiveLoader in future)
             Node root3d = ResourceLoader.Load<PackedScene>("res://3DView.tscn").Instance();
             _viewport3d.AddChild(root3d);
@@ -41,19 +44,17 @@ namespace CSC473.Scripts.Ui
             
             // sidebar node path
             string sidebarPath = "OuterMargin/MainContainer/VPSidebar/ScrollContainer/SideBar";
+            
+            // hint object rotation
+            GetNode<Slider>("OuterMargin/MainContainer/VPSidebar/ScrollContainer/SideBar/ObjRotation")
+                .Connect("value_changed", this, nameof(_HintObjRotChanged));
 
             // mouse sensitivity settings
             Slider mSensSlider = GetNode<Slider>(sidebarPath + "/MouseSens");
             mSensSlider.Connect("value_changed", this, nameof(_MouseSensChanged));
             GetNode<Label>(sidebarPath + "/LMouseSens")
                 .Text = "Mouse Sensitivity: " + mSensSlider.Value;
-            
-            // working plane setting
-            _workingPlaneLabel = GetNode<Label>(sidebarPath + "/LWorkingPlane");
-            _workingPlaneLabel.Text = _workingPlaneLabel.Text + ": " + _stateManager.WorkingPlane;
-            GetNode<Slider>(sidebarPath + "/WorkingPlane")
-                .Connect("value_changed", this, nameof(_WorkingPlaneChanged));
-            
+
             // controlling camera status label
             _stateManager.Connect("ControllingCameraChanged", this, nameof(_ControllingCameraChanged));
             _statusLabel.Text = "Press C to control the camera.";
@@ -88,6 +89,14 @@ namespace CSC473.Scripts.Ui
 
         // // Callbacks
 
+        public void _HintObjRotChanged(float value)
+        {
+            // state manager
+            
+            // update Label
+            _hintObjRot.Text = "Object Rotation: " + (int)value;
+        }
+
         public void _MouseSensChanged(float value)
         {
             // updated mouse sens to the state manager
@@ -96,15 +105,6 @@ namespace CSC473.Scripts.Ui
             // update label
             GetNode<Label>("OuterMargin/MainContainer/VPSidebar/ScrollContainer/SideBar/LMouseSens")
                 .Text = "Mouse Sensitivity: " + value;
-        }
-
-        public void _WorkingPlaneChanged(float value)
-        {
-            // this is always expected to be x.0
-            int iValue = (int) value;
-
-            _stateManager.WorkingPlane = iValue;
-            _workingPlaneLabel.Text = "Working Plane (Elev): " + iValue;
         }
 
         public void _ControllingCameraChanged(bool controlling)
@@ -176,7 +176,7 @@ namespace CSC473.Scripts.Ui
             filters[0] = new PlatformFileDialog.FileFilter();
             filters[0].Desc = "Layout";
             filters[0].Ext = "*.tsl";
-            GD.Print(PlatformFileDialog.SaveFileDialog(filters, "Save Layout", this, nameof(_OpenFileSelected)));
+            GD.Print(PlatformFileDialog.SaveFileDialog(filters, "Save Layout", this, nameof(_SaveFileSelected)));
         }
 
         // // statics
