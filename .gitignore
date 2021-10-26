@@ -13,3 +13,6 @@ data_*/
 
 # Blender
 .blend1
+
+# idk
+*.user
