@@ -8,8 +8,8 @@ namespace CSC473.Scripts
     public class Vehicle : VehicleBody
     {
         // engine performance and steering ratio for controller
-        public float EnginePerf = 50f;
-        public float SteerRatio = 0.5f;
+        public float EnginePerf;
+        public float SteerRatio;
         
         // body color
         private Color _color;
@@ -50,6 +50,8 @@ namespace CSC473.Scripts
         /// </summary>
         public Vehicle()
         {
+            EnginePerf = 50f;
+            SteerRatio = 0.5f;
             _modelPath = "res://Assets/Models/Vehicles/sedan.glb";
             _collisionShapePath = "res://Assets/Vehicles/SedanCollisionShape.tscn";
             _colorMaterialIndex = 1;
@@ -72,8 +74,8 @@ namespace CSC473.Scripts
         /// <param name="strutLen">Total strut length.</param>
         /// <param name="mass">The mass. For reference, a small sedan seems to be 100 units of mass.</param>
         public Vehicle(string modelPath, string collisionShapePath, float enginePerf, float steerRatio, 
-            int colorMaterialIndex = 1, float wheelRadius = 0.3f, float suspTravel = 2.0f, float strutLen = 0.1f, 
-            float mass = 100f)
+            int colorMaterialIndex, float wheelRadius, float suspTravel, float strutLen, 
+            float mass)
         {
             _modelPath = modelPath;
             _collisionShapePath = collisionShapePath;
