@@ -18,6 +18,11 @@ namespace CSC473.Scripts
                 if (evBtn.ButtonIndex != (int)ButtonList.Left || !evBtn.Pressed)
                     return;
 
+                if (Mathf.IsEqualApprox(clickPosition.y, 0.0f, 1e-4f))
+                {
+                    clickPosition.y = 0.0f;
+                }
+
                 GD.Print("Position " + clickPosition + " clicked!");
             }
         }
