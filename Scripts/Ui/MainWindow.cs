@@ -68,7 +68,7 @@ namespace CSC473.Scripts.Ui
 
             // controlling camera status label
             _stateManager.Connect("ControllingCameraChanged", this, nameof(_ControllingCameraChanged));
-            _statusLabel.Text = "Press Alt+C to control the camera.";
+            _statusLabel.Text = "Press F2 to control the camera.";
 
             // populate menubar
             _fileMenu.AddItem("Load Layout", (int) FileMenuItem.Load);
@@ -145,8 +145,8 @@ namespace CSC473.Scripts.Ui
         public void _ControllingCameraChanged(bool controlling)
         {
             _statusLabel.Text = 
-                controlling ? "Press Alt+C or Esc to stop controlling the camera. WASD to move the camera, holding shift moves the camera faster." 
-                    : "Press Alt+C to control the camera.";
+                controlling ? "Press F2 or Esc to stop controlling the camera. WASD to move the camera, holding shift moves the camera faster." 
+                    : "Press F2 to control the camera.";
         }
 
         public void _FileMenuCallback(int id)

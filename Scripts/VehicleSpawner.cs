@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using CSC473.Scripts.CSC473.Scripts;
 using Godot;
 
 namespace CSC473.Scripts
@@ -265,7 +266,7 @@ namespace CSC473.Scripts
 
             // human vehicle controller
             // TODO: make this AI and spawn at parent but not child of parent
-            var controller = new HumanVehicleController();
+            var controller = new AIVehicleController();
             
             vehicle.AddChild(controller);
             GetParent().AddChild(vehicle);
