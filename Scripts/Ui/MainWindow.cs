@@ -1,3 +1,4 @@
+using System;
 using CSC473.Lib;
 using Godot;
 
@@ -18,7 +19,10 @@ namespace CSC473.Scripts.Ui
         private Viewport _viewport3d;
         private Label _statusLabel;
 
+        
+        // sidebar
         private Label _hintObjRot;
+        private LineEdit _randSeed;
 
         private PopupMenu _fileMenu;
 
@@ -36,6 +40,9 @@ namespace CSC473.Scripts.Ui
 
             _hintObjRot = GetNode<Label>("OuterMargin/MainContainer/VPSidebar/ScrollContainer/SideBar/LObjRotation");
 
+            _randSeed = GetNode<LineEdit>(
+                "OuterMargin/MainContainer/VPSidebar/ScrollContainer/SideBar/RandomSeedContainer/RandomSeed");
+
             // preload 3d viewport scene (could use ResourceInteractiveLoader in future)
             Node root3d = ResourceLoader.Load<PackedScene>("res://3DView.tscn").Instance();
             _viewport3d.AddChild(root3d);
@@ -48,6 +55,10 @@ namespace CSC473.Scripts.Ui
             // hint object rotation
             GetNode<Slider>("OuterMargin/MainContainer/VPSidebar/ScrollContainer/SideBar/ObjRotation")
                 .Connect("value_changed", this, nameof(_HintObjRotChanged));
+            
+            // random seed
+            _randSeed.Text = _stateManager.RngSeed;
+            _randSeed.Connect("text_changed", this, nameof(_RandSeedChanged));
 
             // mouse sensitivity settings
             Slider mSensSlider = GetNode<Slider>(sidebarPath + "/MouseSens");
@@ -57,7 +68,7 @@ namespace CSC473.Scripts.Ui
 
             // controlling camera status label
             _stateManager.Connect("ControllingCameraChanged", this, nameof(_ControllingCameraChanged));
-            _statusLabel.Text = "Press C to control the camera.";
+            _statusLabel.Text = "Press Alt+C to control the camera.";
 
             // populate menubar
             _fileMenu.AddItem("Load Layout", (int) FileMenuItem.Load);
@@ -89,6 +100,30 @@ namespace CSC473.Scripts.Ui
 
         // // Callbacks
 
+        public void _RandSeedChanged(string newText)
+        {
+            // dont update unless the seed entered is exactly 16 characters
+            if (newText.Length != 16)
+            {
+                return;
+            }
+            
+            string seed = String.Copy(newText);
+            string hexa = "ABCDEFabcdef0123456789";
+            foreach (char c in newText)
+            {
+                if (!hexa.Contains("" + c))
+                {
+                    // invalid characters are replaced with 0
+                    seed = seed.Replace(c, '0');
+                }
+            }
+
+            // set and update
+            _stateManager.RngSeed = seed;
+            _randSeed.Text = _stateManager.RngSeed;
+        }
+
         public void _HintObjRotChanged(float value)
         {
             // state manager
@@ -110,8 +145,8 @@ namespace CSC473.Scripts.Ui
         public void _ControllingCameraChanged(bool controlling)
         {
             _statusLabel.Text = 
-                controlling ? "Press C or Esc to stop controlling the camera. WASD to move the camera, holding shift moves the camera faster." 
-                    : "Press C to control the camera.";
+                controlling ? "Press Alt+C or Esc to stop controlling the camera. WASD to move the camera, holding shift moves the camera faster." 
+                    : "Press Alt+C to control the camera.";
         }
 
         public void _FileMenuCallback(int id)

@@ -203,6 +203,8 @@ namespace CSC473.Scripts
     /// </summary>
     public class VehicleSpawner : Timer
     {
+        private StateManager _stateManager;
+        
         // holds a tuple of performance classes that can spawn, and the % chance they will spawn (as decimal).
         // the cumulative sum of spawn chances must equal 1.0 for the spawner to work properly.
         private List<(VehiclePerformanceClass, float)> _vehiclePool;
@@ -218,14 +220,14 @@ namespace CSC473.Scripts
 
         public override void _Ready()
         {
+            _stateManager = GetNode<StateManager>("/root/StateManager");
             Connect("timeout", this, nameof(_TimerCallback));
         }
 
         public void _TimerCallback()
         {
             // random spawn
-            Random rnd = new Random();
-            float randVal = rnd.Next(100) / 100f;
+            float randVal = _stateManager.RandInt(0, 100) / 100f;
 
             VehiclePerformanceClass perfClass = null;
             float cumulative = 0f;
@@ -246,7 +248,7 @@ namespace CSC473.Scripts
             }
             
             // random color
-            Color color = new Color(_colorPool[rnd.Next(0, _colorPool.Count - 1)]);
+            Color color = new Color(_colorPool[_stateManager.RandInt(0, _colorPool.Count - 1)]);
 
             Vehicle vehicle = new Vehicle(
                 perfClass.ModelPath(),
