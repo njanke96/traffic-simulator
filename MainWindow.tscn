@@ -1,7 +1,12 @@
-[gd_scene load_steps=4 format=2]
+[gd_scene load_steps=9 format=2]
 
 [ext_resource path="res://Scripts/Ui/MainWindow.cs" type="Script" id=1]
 [ext_resource path="res://Scripts/Ui/DynamicViewport.cs" type="Script" id=2]
+[ext_resource path="res://Assets/Textures/icon_select.png" type="Texture" id=3]
+[ext_resource path="res://Assets/Textures/icon_add_node.png" type="Texture" id=4]
+[ext_resource path="res://Assets/Textures/icon_add_object.png" type="Texture" id=5]
+[ext_resource path="res://Assets/Textures/icon_play.png" type="Texture" id=6]
+[ext_resource path="res://Assets/Textures/icon_pause.png" type="Texture" id=7]
 
 [sub_resource type="GDScript" id=1]
 script/source = "extends ViewportContainer
@@ -70,8 +75,54 @@ margin_bottom = 20.0
 text = "Help"
 switch_on_hover = true
 
-[node name="VPSidebar" type="HSplitContainer" parent="MainWindow/OuterMargin/MainContainer"]
+[node name="ToolBar" type="HBoxContainer" parent="MainWindow/OuterMargin/MainContainer"]
 margin_top = 24.0
+margin_right = 1008.0
+margin_bottom = 48.0
+
+[node name="Play" type="ToolButton" parent="MainWindow/OuterMargin/MainContainer/ToolBar"]
+margin_right = 28.0
+margin_bottom = 24.0
+hint_tooltip = "Play the simulation."
+disabled = true
+icon = ExtResource( 6 )
+
+[node name="Pause" type="ToolButton" parent="MainWindow/OuterMargin/MainContainer/ToolBar"]
+margin_left = 32.0
+margin_right = 60.0
+margin_bottom = 24.0
+hint_tooltip = "Pause the simulation."
+icon = ExtResource( 7 )
+
+[node name="VSeparator" type="VSeparator" parent="MainWindow/OuterMargin/MainContainer/ToolBar"]
+margin_left = 64.0
+margin_right = 68.0
+margin_bottom = 24.0
+
+[node name="Select" type="ToolButton" parent="MainWindow/OuterMargin/MainContainer/ToolBar"]
+margin_left = 72.0
+margin_right = 92.0
+margin_bottom = 24.0
+hint_tooltip = "Select tool"
+disabled = true
+icon = ExtResource( 3 )
+
+[node name="ToolButton2" type="ToolButton" parent="MainWindow/OuterMargin/MainContainer/ToolBar"]
+margin_left = 96.0
+margin_right = 124.0
+margin_bottom = 24.0
+hint_tooltip = "Add node"
+icon = ExtResource( 4 )
+
+[node name="ToolButton3" type="ToolButton" parent="MainWindow/OuterMargin/MainContainer/ToolBar"]
+margin_left = 128.0
+margin_right = 156.0
+margin_bottom = 24.0
+hint_tooltip = "Add hint object"
+icon = ExtResource( 5 )
+
+[node name="VPSidebar" type="HSplitContainer" parent="MainWindow/OuterMargin/MainContainer"]
+margin_top = 52.0
 margin_right = 1008.0
 margin_bottom = 558.0
 mouse_filter = 1
@@ -79,7 +130,7 @@ size_flags_vertical = 3
 
 [node name="ViewportContainer" type="ViewportContainer" parent="MainWindow/OuterMargin/MainContainer/VPSidebar"]
 margin_right = 800.0
-margin_bottom = 534.0
+margin_bottom = 506.0
 mouse_filter = 1
 size_flags_horizontal = 3
 size_flags_vertical = 3
@@ -96,7 +147,7 @@ script = ExtResource( 2 )
 [node name="ScrollContainer" type="ScrollContainer" parent="MainWindow/OuterMargin/MainContainer/VPSidebar"]
 margin_left = 812.0
 margin_right = 1008.0
-margin_bottom = 534.0
+margin_bottom = 506.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
 size_flags_stretch_ratio = 0.25
