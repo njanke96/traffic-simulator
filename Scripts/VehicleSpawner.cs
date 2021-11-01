@@ -216,6 +216,7 @@ namespace CSC473.Scripts
             Autostart = true;
             OneShot = false;
             WaitTime = 5.0f;
+            PauseMode = PauseModeEnum.Stop;
             InitVehiclePool();
         }
 
@@ -263,6 +264,8 @@ namespace CSC473.Scripts
                 perfClass.Mass(),
                 perfClass.TranslateZ()
             );
+
+            vehicle.PauseMode = PauseModeEnum.Stop;
 
             // human vehicle controller
             // TODO: make this AI and spawn at parent but not child of parent

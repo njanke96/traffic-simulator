@@ -25,40 +25,48 @@ namespace CSC473.Scripts.Ui
         private LineEdit _randSeed;
 
         private PopupMenu _fileMenu;
+        private Button _playButton;
+        private Button _pauseButton;
 
         // // overrides
 
         public override void _Ready()
         {
-            // get node refs
+            // sidebar node path
+            string sidebarPath = "OuterMargin/MainContainer/VPSidebar/ScrollContainer/SideBar";
+            
+            // state manager
+            _stateManager = GetNode<StateManager>("/root/StateManager");
+            
+            // // get node refs
             _viewport3d = GetNode<Viewport>("OuterMargin/MainContainer/VPSidebar" +
                                             "/ViewportContainer/Viewport");
 
             _fileMenu = GetNode<MenuButton>("OuterMargin/MainContainer/MenuButtons/File").GetPopup();
 
             _statusLabel = GetNode<Label>("OuterMargin/MainContainer/StatusContainer/Label");
-
-            _hintObjRot = GetNode<Label>("OuterMargin/MainContainer/VPSidebar/ScrollContainer/SideBar/LObjRotation");
-
-            _randSeed = GetNode<LineEdit>(
-                "OuterMargin/MainContainer/VPSidebar/ScrollContainer/SideBar/RandomSeedContainer/RandomSeed");
-
-            // preload 3d viewport scene (could use ResourceInteractiveLoader in future)
-            Node root3d = ResourceLoader.Load<PackedScene>("res://3DView.tscn").Instance();
-            _viewport3d.AddChild(root3d);
-
-            _stateManager = GetNode<StateManager>("/root/StateManager");
             
-            // sidebar node path
-            string sidebarPath = "OuterMargin/MainContainer/VPSidebar/ScrollContainer/SideBar";
+            // toolbar
+
+            _playButton = GetNode<Button>("OuterMargin/MainContainer/ToolBar/Play");
+            _playButton.Connect("button_down", this, nameof(_PlayClicked));
             
-            // hint object rotation
+            _pauseButton = GetNode<Button>("OuterMargin/MainContainer/ToolBar/Pause");
+            _pauseButton.Connect("button_down", this, nameof(_PauseClicked));
+            
+            // sidebar
+
+            _hintObjRot = GetNode<Label>(sidebarPath + "/LObjRotation");
             GetNode<Slider>("OuterMargin/MainContainer/VPSidebar/ScrollContainer/SideBar/ObjRotation")
                 .Connect("value_changed", this, nameof(_HintObjRotChanged));
             
-            // random seed
+            _randSeed = GetNode<LineEdit>(sidebarPath + "/RandomSeedContainer/RandomSeed");
             _randSeed.Text = _stateManager.RngSeed;
             _randSeed.Connect("text_changed", this, nameof(_RandSeedChanged));
+
+            // // preload 3d viewport scene (could use ResourceInteractiveLoader in future)
+            Node root3d = ResourceLoader.Load<PackedScene>("res://3DView.tscn").Instance();
+            _viewport3d.AddChild(root3d);
 
             // mouse sensitivity settings
             Slider mSensSlider = GetNode<Slider>(sidebarPath + "/MouseSens");
@@ -99,6 +107,20 @@ namespace CSC473.Scripts.Ui
         }
 
         // // Callbacks
+
+        public void _PlayClicked()
+        {
+            GetTree().Paused = false;
+            _playButton.Disabled = true;
+            _pauseButton.Disabled = false;
+        }
+
+        public void _PauseClicked()
+        {
+            GetTree().Paused = true;
+            _playButton.Disabled = false;
+            _pauseButton.Disabled = true;
+        }
 
         public void _RandSeedChanged(string newText)
         {

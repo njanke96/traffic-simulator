@@ -30,6 +30,7 @@ flip_faces = true
 [sub_resource type="PhysicsMaterial" id=6]
 
 [node name="Root" type="Spatial"]
+pause_mode = 2
 
 [node name="Env" type="Node" parent="."]
 
