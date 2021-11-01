@@ -43,6 +43,7 @@ namespace CSC473.Scripts
         private readonly float _strutLen;
         
         // other attributes
+        private readonly float _translateZ;
 
         /// <summary>
         /// The default constructor is intended for debugging, when attaching this script to a VehicleBody
@@ -59,6 +60,7 @@ namespace CSC473.Scripts
             _suspTravel = 2.0f;
             _strutLen = 0.1f;
             _mass = 100f;
+            _translateZ = 0f;
         }
 
         /// <summary>
@@ -73,9 +75,10 @@ namespace CSC473.Scripts
         /// <param name="suspTravel">Total suspension travel</param>
         /// <param name="strutLen">Total strut length.</param>
         /// <param name="mass">The mass. For reference, a small sedan seems to be 100 units of mass.</param>
+        /// <param name="translateZ">How much to translate the vehicle body on the z axis</param>
         public Vehicle(string modelPath, string collisionShapePath, float enginePerf, float steerRatio, 
             int colorMaterialIndex, float wheelRadius, float suspTravel, float strutLen, 
-            float mass)
+            float mass, float translateZ)
         {
             _modelPath = modelPath;
             _collisionShapePath = collisionShapePath;
@@ -86,6 +89,7 @@ namespace CSC473.Scripts
             _suspTravel = suspTravel;
             _strutLen = strutLen;
             _mass = mass;
+            _translateZ = translateZ;
         }
 
         public override void _Ready()
@@ -101,7 +105,15 @@ namespace CSC473.Scripts
             _body = (MeshInstance) mesh.FindNode("body");
             
             // rotate vehicle 180 because vehicles forward vector must be +z
-            mesh.GetNode<Spatial>("tmpParent").RotateY(Mathf.Pi);
+            Spatial tmpParent = mesh.GetNode<Spatial>("tmpParent");
+            tmpParent.RotateY(Mathf.Pi);
+
+            // translate if needed
+            if (_translateZ != 0f)
+            {
+                tmpParent.Translate(new Vector3(0f, 0f, _translateZ));
+                cs.Translate(new Vector3(0f, 0f, -1*_translateZ));
+            }
 
             // rigidbody attributes
             PhysicsMaterialOverride = new PhysicsMaterial();

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Godot;
 
 namespace CSC473.Scripts
@@ -37,6 +38,9 @@ namespace CSC473.Scripts
         
         // mass (relative, sedan is 100 units of mass)
         public abstract float Mass();
+        
+        // z rotation
+        public abstract float TranslateZ();
     }
 
     internal class Sedan : VehiclePerformanceClass
@@ -66,6 +70,8 @@ namespace CSC473.Scripts
         public override float StrutLen() { return 0.1f; }
         
         public override float Mass() { return 100f; }
+
+        public override float TranslateZ() { return 0f; }
     }
     
     internal class Van : VehiclePerformanceClass
@@ -95,17 +101,119 @@ namespace CSC473.Scripts
         public override float StrutLen() { return 0.1f; }
         
         public override float Mass() { return 150f; }
+        
+        public override float TranslateZ() { return 0f; }
     }
     
+    internal class Delivery : VehiclePerformanceClass
+    {
+        public override string Name() { return "Delivery Truck"; }
+
+        public override string ModelPath()
+        {
+            return "res://Assets/Models/Vehicles/delivery.glb";
+        }
+
+        public override string CollisionShapePath()
+        {
+            return "res://Assets/Vehicles/DeliveryCollisionShape.scn";
+        }
+
+        public override float EnginePerf() { return 120f; }
+        
+        public override float SteerRatio() { return 0.5f; }
+
+        public override int ColorMaterialIndex() { return 1; }
+
+        public override float WheelRadius() { return 0.3f; }
+        
+        public override float SuspTravel() { return 2.0f; }
+        
+        public override float StrutLen() { return 0.1f; }
+        
+        public override float Mass() { return 250f; }
+        
+        public override float TranslateZ() { return 0.4f; }
+    }
+    
+    internal class SportsCar : VehiclePerformanceClass
+    {
+        public override string Name() { return "Sports Car"; }
+
+        public override string ModelPath()
+        {
+            return "res://Assets/Models/Vehicles/sedanSports.glb";
+        }
+
+        public override string CollisionShapePath()
+        {
+            return "res://Assets/Vehicles/SportsCollisionShape.tscn";
+        }
+
+        public override float EnginePerf() { return 90f; }
+        
+        public override float SteerRatio() { return 0.5f; }
+
+        public override int ColorMaterialIndex() { return 1; }
+
+        public override float WheelRadius() { return 0.3f; }
+        
+        public override float SuspTravel() { return 2.0f; }
+        
+        public override float StrutLen() { return 0.1f; }
+        
+        public override float Mass() { return 100f; }
+        
+        public override float TranslateZ() { return 0f; }
+    }
+    
+    internal class SportsUtility : VehiclePerformanceClass
+    {
+        public override string Name() { return "SUV"; }
+
+        public override string ModelPath()
+        {
+            return "res://Assets/Models/Vehicles/suv.glb";
+        }
+
+        public override string CollisionShapePath()
+        {
+            return "res://Assets/Vehicles/SuvCollisionShape.tscn";
+        }
+
+        public override float EnginePerf() { return 70f; }
+        
+        public override float SteerRatio() { return 0.5f; }
+
+        public override int ColorMaterialIndex() { return 1; }
+
+        public override float WheelRadius() { return 0.3f; }
+        
+        public override float SuspTravel() { return 2.0f; }
+        
+        public override float StrutLen() { return 0.1f; }
+        
+        public override float Mass() { return 170f; }
+        
+        public override float TranslateZ() { return 0.18f; }
+    }
+    
+    /// <summary>
+    /// Spawns AI-driven vehicles at its parent's origin at the interval specified by the WaitTime property.
+    /// </summary>
     public class VehicleSpawner : Timer
     {
-        private List<VehiclePerformanceClass> vehiclePool_;
+        // holds a tuple of performance classes that can spawn, and the % chance they will spawn (as decimal).
+        // the cumulative sum of spawn chances must equal 1.0 for the spawner to work properly.
+        private List<(VehiclePerformanceClass, float)> _vehiclePool;
+        private List<Color> _colorPool;
 
         public VehicleSpawner()
         {
             Autostart = true;
-            OneShot = true;
-            WaitTime = 0.5f;
+            OneShot = false;
+            WaitTime = 5.0f;
+            InitVehiclePool();
         }
 
         public override void _Ready()
@@ -115,8 +223,57 @@ namespace CSC473.Scripts
 
         public void _TimerCallback()
         {
+            // random spawn
+            Random rnd = new Random();
+            float randVal = rnd.Next(100) / 100f;
+
+            VehiclePerformanceClass perfClass = null;
+            float cumulative = 0f;
+            foreach ((VehiclePerformanceClass vehClass, float chance) in _vehiclePool)
+            {
+                cumulative += chance;
+                if (randVal > cumulative) continue;
+                
+                // pick this class
+                perfClass = vehClass;
+                break;
+            }
+
+            if (perfClass == null)
+            {
+                throw new InvalidOperationException(
+                    "No perf class chosen. This can happen when sum of spawn chances does not equal 1.0");
+            }
+            
+            // random color
+            Color color = new Color(_colorPool[rnd.Next(0, _colorPool.Count - 1)]);
+
+            Vehicle vehicle = new Vehicle(
+                perfClass.ModelPath(),
+                perfClass.CollisionShapePath(),
+                perfClass.EnginePerf(),
+                perfClass.SteerRatio(),
+                perfClass.ColorMaterialIndex(),
+                perfClass.WheelRadius(),
+                perfClass.SuspTravel(),
+                perfClass.StrutLen(),
+                perfClass.Mass(),
+                perfClass.TranslateZ()
+            );
+
+            // human vehicle controller
+            // TODO: make this AI and spawn at parent but not child of parent
+            var controller = new HumanVehicleController();
+            
+            vehicle.AddChild(controller);
+            GetParent().AddChild(vehicle);
+            
+            // set color
+            vehicle.BodyColor = color;
+
+            /*
             // make a sedan
-            var vehicleclass = new Van();
+            var vehicleclass = new SportsUtility();
             
             // make a vehicle from sedan
             Vehicle vehSedan = new Vehicle(
@@ -128,7 +285,8 @@ namespace CSC473.Scripts
                 vehicleclass.WheelRadius(),
                 vehicleclass.SuspTravel(),
                 vehicleclass.StrutLen(),
-                vehicleclass.Mass()
+                vehicleclass.Mass(),
+                vehicleclass.TranslateZ()
             );
             
             // human vehicle controller
@@ -136,6 +294,36 @@ namespace CSC473.Scripts
             
             vehSedan.AddChild(controller);
             GetParent().AddChild(vehSedan);
+            */
+        }
+
+        private void InitVehiclePool()
+        {
+            // spawn pool
+            _vehiclePool = new List<(VehiclePerformanceClass, float)>
+            {
+                (new Sedan(), 0.2f),
+                (new Van(), 0.2f),
+                (new Delivery(), 0.2f),
+                (new SportsCar(), 0.2f),
+                (new SportsUtility(), 0.2f)
+            };
+
+            // color pool (equal chance)
+            _colorPool = new List<Color>
+            {
+                Colors.LightGray,
+                Colors.LightSlateGray,
+                Colors.DodgerBlue,
+                Colors.RoyalBlue,
+                Colors.LightGreen,
+                Colors.PaleGreen,
+                Colors.LightCoral,
+                Colors.Firebrick,
+                Colors.DarkOrange,
+                Colors.Yellow,
+                Colors.Violet
+            };
         }
     }
 }

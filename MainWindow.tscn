@@ -223,6 +223,7 @@ text = "Object Type:"
 margin_left = 85.0
 margin_right = 196.0
 margin_bottom = 20.0
+hint_tooltip = "Hint objects are special objects that AI drivers \"see\", affecting their behavior."
 size_flags_horizontal = 3
 disabled = true
 
