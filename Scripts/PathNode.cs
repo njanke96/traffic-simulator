@@ -13,10 +13,14 @@ namespace CSC473.Scripts
         End
     }
     
-    public class PathNode : Spatial
+    public class PathNode : BaseLayoutObject
     {
-        public PathNodeType Type;
-        public List<PathNode> OutboundEdges;
+        public PathNodeType NodeType;
+
+        public override void DrawBoundingBox()
+        {
+            throw new System.NotImplementedException();
+        }
 
         public override void _Ready()
         {
