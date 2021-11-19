@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using CSC473.Lib;
 using Godot;
 
 namespace CSC473.Scripts
@@ -13,11 +14,11 @@ namespace CSC473.Scripts
         End
     }
     
-    public class PathNode : BaseLayoutObject
+    public class PathNode : BaseLayoutObject, ISelectable
     {
         public PathNodeType NodeType;
 
-        public override void DrawBoundingBox()
+        public void DrawBoundingBox()
         {
             throw new System.NotImplementedException();
         }

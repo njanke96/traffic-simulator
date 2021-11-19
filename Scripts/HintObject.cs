@@ -1,4 +1,5 @@
-﻿using Godot;
+﻿using CSC473.Lib;
+using Godot;
 
 namespace CSC473.Scripts
 {
@@ -13,7 +14,7 @@ namespace CSC473.Scripts
     /// Hint objects are spatial objects that influence AI in some way.
     /// Hint objects are not rigid bodies, ie cars can drive through them.
     /// </summary>
-    public class HintObject : BaseLayoutObject
+    public class HintObject : BaseLayoutObject, ISelectable
     {
         public HintObjectType HintType;
 
@@ -28,7 +29,7 @@ namespace CSC473.Scripts
             }
         }
 
-        public override void DrawBoundingBox()
+        public void DrawBoundingBox()
         {
             throw new System.NotImplementedException();
         }
