@@ -1,11 +1,12 @@
-﻿using Godot;
+﻿using CSC473.Lib;
+using Godot;
 
 namespace CSC473.Scripts
 {
     /// <summary>
     /// Base class for vehicles.
     /// </summary>
-    public class Vehicle : VehicleBody
+    public class Vehicle : VehicleBody, ISelectable
     {
         // engine performance and steering ratio for controller
         public float EnginePerf;
@@ -188,6 +189,11 @@ namespace CSC473.Scripts
             // finally add the mesh and collision shape as children
             AddChild(mesh);
             AddChild(cs);
+        }
+
+        public ImmediateGeometry DrawBoundingBox()
+        {
+            throw new System.NotImplementedException();
         }
     }
 }

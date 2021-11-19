@@ -16,6 +16,13 @@ namespace CSC473.Scripts
         private List<PathNode> _pathNodes;
         private List<HintObject> _hintObjects;
         private List<Tuple<int, int>> _edges;
+
+        public PathLayout()
+        {
+            _pathNodes = new List<PathNode>();
+            _hintObjects = new List<HintObject>();
+            _edges = new List<Tuple<int, int>>();
+        }
         
         /// <summary>
         /// Add a new object to the layout.

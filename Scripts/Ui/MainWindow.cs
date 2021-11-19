@@ -25,8 +25,15 @@ namespace CSC473.Scripts.Ui
         private LineEdit _randSeed;
 
         private PopupMenu _fileMenu;
+        
+        // toolbar
         private Button _playButton;
         private Button _pauseButton;
+        private Button _selectButton;
+        private Button _addNodeButton;
+        private Button _addHintObjButton;
+        private Button _linkNodesButton;
+        private Button _deleteNodeButton;
 
         // // overrides
 
@@ -53,6 +60,24 @@ namespace CSC473.Scripts.Ui
             
             _pauseButton = GetNode<Button>("OuterMargin/MainContainer/ToolBar/Pause");
             _pauseButton.Connect("button_down", this, nameof(_PauseClicked));
+            
+            _selectButton = GetNode<Button>("OuterMargin/MainContainer/ToolBar/Select");
+            _addNodeButton = GetNode<Button>("OuterMargin/MainContainer/ToolBar/AddNode");
+            _addHintObjButton = GetNode<Button>("OuterMargin/MainContainer/ToolBar/AddHintObject");
+            _linkNodesButton = GetNode<Button>("OuterMargin/MainContainer/ToolBar/LinkNodes");
+            _deleteNodeButton = GetNode<Button>("OuterMargin/MainContainer/ToolBar/DeleteNode");
+            
+            _selectButton.Connect("button_down", this, nameof(_ToolButtonClicked), 
+                new Godot.Collections.Array(ToolType.Select));
+            _addNodeButton.Connect("button_down", this, nameof(_ToolButtonClicked), 
+                new Godot.Collections.Array(ToolType.AddNode));
+            _addHintObjButton.Connect("button_down", this, nameof(_ToolButtonClicked), 
+                new Godot.Collections.Array(ToolType.AddHintObject));
+            _linkNodesButton.Connect("button_down", this, nameof(_ToolButtonClicked), 
+                new Godot.Collections.Array(ToolType.LinkNodes));
+            _deleteNodeButton.Connect("button_down", this, nameof(_ToolButtonClicked), 
+                new Godot.Collections.Array(ToolType.DeleteNode));
+            
             
             // sidebar
 
@@ -120,6 +145,44 @@ namespace CSC473.Scripts.Ui
             GetTree().Paused = true;
             _playButton.Disabled = false;
             _pauseButton.Disabled = true;
+        }
+
+        public void _ToolButtonClicked(ToolType tool)
+        {
+            EnableToolButtons();
+            switch (tool)
+            {
+                case ToolType.Select:
+                {
+                    _stateManager.CurrentTool = ToolType.Select;
+                    _selectButton.Disabled = true;
+                    break;
+                }
+                case ToolType.AddNode:
+                {
+                    _stateManager.CurrentTool = ToolType.AddNode;
+                    _addNodeButton.Disabled = true;
+                    break;
+                }
+                case ToolType.AddHintObject:
+                {
+                    _stateManager.CurrentTool = ToolType.AddHintObject;
+                    _addHintObjButton.Disabled = true;
+                    break;
+                }
+                case ToolType.LinkNodes:
+                {
+                    _stateManager.CurrentTool = ToolType.LinkNodes;
+                    _linkNodesButton.Disabled = true;
+                    break;
+                }
+                case ToolType.DeleteNode:
+                {
+                    _stateManager.CurrentTool = ToolType.DeleteNode;
+                    _deleteNodeButton.Disabled = true;
+                    break;
+                }
+            }
         }
 
         public void _RandSeedChanged(string newText)
@@ -234,6 +297,28 @@ namespace CSC473.Scripts.Ui
             filters[0].Desc = "Layout";
             filters[0].Ext = "*.tsl";
             GD.Print(PlatformFileDialog.SaveFileDialog(filters, "Save Layout", this, nameof(_SaveFileSelected)));
+        }
+        
+        // // private
+
+        /// <summary>
+        /// Enables all tool buttons.
+        /// </summary>
+        private void EnableToolButtons()
+        {
+            Button[] buttons =
+            {
+                _selectButton,
+                _addNodeButton,
+                _addHintObjButton,
+                _linkNodesButton,
+                _deleteNodeButton
+            };
+
+            foreach (Button btn in buttons)
+            {
+                btn.Disabled = false;
+            }
         }
 
         // // statics

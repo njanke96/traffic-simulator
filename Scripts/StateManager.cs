@@ -3,6 +3,15 @@ using Godot;
 
 namespace CSC473.Scripts
 {
+    public enum ToolType
+    {
+        Select,
+        AddNode,
+        AddHintObject,
+        LinkNodes,
+        DeleteNode
+    }
+    
     /// <summary>
     /// A singleton instantiated by the engine, manages global state.
     /// </summary>
@@ -13,6 +22,7 @@ namespace CSC473.Scripts
         // state that do not trigger signals
         
         public float SMouseSensitivity = 5.0f;
+        public ToolType CurrentTool = ToolType.Select;
 
         // state that trigger signals
         

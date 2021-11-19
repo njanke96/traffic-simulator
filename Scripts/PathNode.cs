@@ -18,7 +18,7 @@ namespace CSC473.Scripts
     {
         public PathNodeType NodeType;
 
-        public void DrawBoundingBox()
+        public ImmediateGeometry DrawBoundingBox()
         {
             throw new System.NotImplementedException();
         }
