@@ -267,8 +267,7 @@ namespace CSC473.Scripts
 
             vehicle.PauseMode = PauseModeEnum.Stop;
 
-            // human vehicle controller
-            // TODO: make this AI and spawn at parent but not child of parent
+            // vehicle controller
             var controller = new AIVehicleController();
             
             vehicle.AddChild(controller);

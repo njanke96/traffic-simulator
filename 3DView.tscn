@@ -4,7 +4,7 @@
 [ext_resource path="res://Assets/WorldEnv.tres" type="Environment" id=2]
 [ext_resource path="res://Scripts/CamController.cs" type="Script" id=3]
 [ext_resource path="res://Scripts/ClickArea.cs" type="Script" id=4]
-[ext_resource path="res://Scripts/VehicleSpawner.cs" type="Script" id=5]
+[ext_resource path="res://Scripts/PathLayout.cs" type="Script" id=5]
 [ext_resource path="res://Assets/GroundCollisionShape.tres" type="Shape" id=6]
 
 [sub_resource type="SpatialMaterial" id=1]
@@ -86,5 +86,5 @@ physics_material_override = SubResource( 6 )
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, 0 )
 shape = ExtResource( 6 )
 
-[node name="VehicleSpawner" type="Timer" parent="."]
+[node name="PathLayout" type="Node" parent="."]
 script = ExtResource( 5 )

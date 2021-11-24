@@ -1,0 +1,26 @@
+[gd_scene load_steps=4 format=2]
+
+[sub_resource type="SpatialMaterial" id=1]
+albedo_color = Color( 0, 1, 0.219608, 1 )
+
+[sub_resource type="SphereMesh" id=2]
+material = SubResource( 1 )
+radius = 0.5
+height = 0.5
+radial_segments = 32
+rings = 16
+is_hemisphere = true
+
+[sub_resource type="BoxShape" id=3]
+extents = Vector3( 0.5, 0.5, 0.5 )
+
+[node name="VisualNodeRoot" type="Spatial"]
+
+[node name="Mesh" type="MeshInstance" parent="."]
+mesh = SubResource( 2 )
+material/0 = null
+
+[node name="ClickArea" type="Area" parent="."]
+
+[node name="ClickShape" type="CollisionShape" parent="ClickArea"]
+shape = SubResource( 3 )

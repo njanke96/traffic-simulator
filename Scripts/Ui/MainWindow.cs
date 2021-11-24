@@ -53,6 +53,8 @@ namespace CSC473.Scripts.Ui
             // state manager
             _stateManager = GetNode<StateManager>("/root/StateManager");
             _stateManager.Connect(nameof(StateManager.ToolTypeChanged), this, nameof(_CurrentToolChanged));
+            _stateManager.Connect(nameof(StateManager.StatusLabelChangeRequest), this,
+                nameof(_StatusLabelChangeRequested));
             
             // // get node refs
             _viewport3d = GetNode<Viewport>("OuterMargin/MainContainer/VPSidebar" +
@@ -262,6 +264,11 @@ namespace CSC473.Scripts.Ui
             _statusLabel.Text = 
                 controlling ? "Press F2 or Esc to stop controlling the camera. WASD to move the camera, holding shift moves the camera faster." 
                     : "Press F2 to control the camera.";
+        }
+
+        public void _StatusLabelChangeRequested(string newText)
+        {
+            _statusLabel.Text = newText;
         }
 
         public void _CurrentToolChanged(ToolType newTool)

@@ -12,6 +12,6 @@ namespace CSC473.Lib
         /// representing the bounding box of a selectable object to show that it is selected.
         /// </summary>
         /// <returns>An ImmediateGeometry object ready to be added to the scene tree.</returns>
-        ImmediateGeometry DrawBoundingBox();
+        ImmediateGeometry GetBoundingBox();
     }
 }

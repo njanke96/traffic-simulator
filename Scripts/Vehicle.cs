@@ -191,7 +191,7 @@ namespace CSC473.Scripts
             AddChild(cs);
         }
 
-        public ImmediateGeometry DrawBoundingBox()
+        public ImmediateGeometry GetBoundingBox()
         {
             throw new System.NotImplementedException();
         }

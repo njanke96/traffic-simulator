@@ -57,10 +57,16 @@ namespace CSC473.Scripts
         // // signals
 
         [Signal]
+        public delegate void StatusLabelChangeRequest(string newText);
+
+        [Signal]
         public delegate void ControllingCameraChanged(bool enabled);
 
         [Signal]
         public delegate void ToolTypeChanged(ToolType newTool);
+
+        [Signal]
+        public delegate void GroundPlaneClicked(Vector3 where);
 
         // //
 

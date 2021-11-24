@@ -9,6 +9,6 @@ namespace CSC473.Scripts
     {
         // The child scene to be instanced providing the visual representation of this layout
         // object, as well as handle click detection.
-        public string ChildScene;
+        protected string ChildScene = null;
     }
 }

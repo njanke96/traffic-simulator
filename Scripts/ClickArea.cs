@@ -23,7 +23,7 @@ namespace CSC473.Scripts
                     clickPosition.y = 0.0f;
                 }
 
-                GD.Print("Position " + clickPosition + " clicked!");
+                _stateManager.EmitSignal(nameof(StateManager.GroundPlaneClicked), clickPosition);
             }
         }
     }
