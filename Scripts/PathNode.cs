@@ -9,9 +9,9 @@ namespace CSC473.Scripts
     /// </summary>
     public enum PathNodeType
     {
-        Enroute,
-        Start,
-        End
+        Enroute = 0,
+        Start = 1,
+        End = 2
     }
     
     public class PathNode : BaseLayoutObject, ISelectable

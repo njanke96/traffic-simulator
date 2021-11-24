@@ -21,7 +21,15 @@ namespace CSC473.Scripts.Ui
 
         
         // sidebar
-        private Label _hintObjRot;
+        private OptionButton _nodeType;
+        private LineEdit _speedLimit;
+        private LineEdit _minSpawnTimer;
+        private LineEdit _maxSpawnTimer;
+
+        private OptionButton _objType;
+        private OptionButton _lightChannel;
+        private Slider _hintObjRot;
+        private Label _hintObjRotLabel;
         private LineEdit _randSeed;
 
         private PopupMenu _fileMenu;
@@ -44,6 +52,7 @@ namespace CSC473.Scripts.Ui
             
             // state manager
             _stateManager = GetNode<StateManager>("/root/StateManager");
+            _stateManager.Connect(nameof(StateManager.ToolTypeChanged), this, nameof(_CurrentToolChanged));
             
             // // get node refs
             _viewport3d = GetNode<Viewport>("OuterMargin/MainContainer/VPSidebar" +
@@ -80,10 +89,26 @@ namespace CSC473.Scripts.Ui
             
             
             // sidebar
+            _nodeType = GetNode<OptionButton>(sidebarPath + "/TypeContainer/Type");
+            _nodeType.AddItem("Enroute", (int)PathNodeType.Enroute);
+            _nodeType.AddItem("Start", (int)PathNodeType.Start);
+            _nodeType.AddItem("End", (int)PathNodeType.End);
 
-            _hintObjRot = GetNode<Label>(sidebarPath + "/LObjRotation");
-            GetNode<Slider>("OuterMargin/MainContainer/VPSidebar/ScrollContainer/SideBar/ObjRotation")
-                .Connect("value_changed", this, nameof(_HintObjRotChanged));
+            _speedLimit = GetNode<LineEdit>(sidebarPath + "/SpeedLimitContainer/SpeedLimit");
+            _minSpawnTimer = GetNode<LineEdit>(sidebarPath + "/MinSpawnTimerContainer/MinSpawnTimer");
+            _maxSpawnTimer = GetNode<LineEdit>(sidebarPath + "/MaxSpawnTimerContainer/MaxSpawnTimer");
+
+            _objType = GetNode<OptionButton>(sidebarPath + "/ObjTypeContainer/ObjType");
+            _objType.AddItem("Stop Sign", (int) HintObjectType.StopSign);
+            _objType.AddItem("Traffic Light", (int) HintObjectType.TrafficLight);
+            
+            _lightChannel = GetNode<OptionButton>(sidebarPath + "/LightChannelContainer/LightChannel");
+            _lightChannel.AddItem("Channel 1", 0);
+            _lightChannel.AddItem("Channel 2", 1);
+
+            _hintObjRot = GetNode<Slider>(sidebarPath + "/ObjRotation");
+            _hintObjRotLabel = GetNode<Label>(sidebarPath + "/LObjRotation");
+            _hintObjRot.Connect("value_changed", this, nameof(_HintObjRotChanged));
             
             _randSeed = GetNode<LineEdit>(sidebarPath + "/RandomSeedContainer/RandomSeed");
             _randSeed.Text = _stateManager.RngSeed;
@@ -100,7 +125,8 @@ namespace CSC473.Scripts.Ui
                 .Text = "Mouse Sensitivity: " + mSensSlider.Value;
 
             // controlling camera status label
-            _stateManager.Connect("ControllingCameraChanged", this, nameof(_ControllingCameraChanged));
+            _stateManager.Connect(nameof(StateManager.ControllingCameraChanged), this, 
+                nameof(_ControllingCameraChanged));
             _statusLabel.Text = "Press F2 to control the camera.";
 
             // populate menubar
@@ -129,6 +155,10 @@ namespace CSC473.Scripts.Ui
 
             // menu bar callbacks
             _fileMenu.Connect("id_pressed", this, nameof(_FileMenuCallback));
+            
+            // force control states and default values
+            SetNodeControlsEnabled(false);
+            SetHintObjControlsEnabled(false);
         }
 
         // // Callbacks
@@ -214,7 +244,7 @@ namespace CSC473.Scripts.Ui
             // state manager
             
             // update Label
-            _hintObjRot.Text = "Object Rotation: " + (int)value;
+            _hintObjRotLabel.Text = "Object Rotation: " + (int)value;
         }
 
         public void _MouseSensChanged(float value)
@@ -232,6 +262,21 @@ namespace CSC473.Scripts.Ui
             _statusLabel.Text = 
                 controlling ? "Press F2 or Esc to stop controlling the camera. WASD to move the camera, holding shift moves the camera faster." 
                     : "Press F2 to control the camera.";
+        }
+
+        public void _CurrentToolChanged(ToolType newTool)
+        {
+            SetNodeControlsEnabled(false);
+            SetHintObjControlsEnabled(false);
+            
+            if (newTool == ToolType.AddNode)
+            {
+                SetNodeControlsEnabled(true);
+            }
+            else if (newTool == ToolType.AddHintObject)
+            {
+                SetHintObjControlsEnabled(true);
+            }
         }
 
         public void _FileMenuCallback(int id)
@@ -319,6 +364,45 @@ namespace CSC473.Scripts.Ui
             {
                 btn.Disabled = false;
             }
+        }
+
+        /// <summary>
+        /// Sets enabled mode of UI elements related to the selected node.
+        /// </summary>
+        private void SetNodeControlsEnabled(bool enabled)
+        {
+            if (!enabled)
+            {
+                // restore default values
+                _nodeType.Selected = (int) PathNodeType.Enroute;
+                _speedLimit.Text = "50";
+                _minSpawnTimer.Text = "2.0";
+                _maxSpawnTimer.Text = "6.0";
+            }
+            
+            _nodeType.Disabled = !enabled;
+            _speedLimit.Editable = enabled;
+            _minSpawnTimer.Editable = enabled;
+            _maxSpawnTimer.Editable = enabled;
+        }
+        
+        /// <summary>
+        /// Sets enabled mode of UI elements related to the selected hint object.
+        /// </summary>
+        private void SetHintObjControlsEnabled(bool enabled)
+        {
+            if (!enabled)
+            {
+                // restore default values
+                _objType.Selected = (int) HintObjectType.StopSign;
+                _lightChannel.Selected = 0;
+                _hintObjRot.Value = 0.0;
+                _HintObjRotChanged(0.0f);
+            }
+            
+            _objType.Disabled = !enabled;
+            _lightChannel.Disabled = !enabled;
+            _hintObjRot.Editable = enabled;
         }
 
         // // statics

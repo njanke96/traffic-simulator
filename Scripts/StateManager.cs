@@ -22,7 +22,6 @@ namespace CSC473.Scripts
         // state that do not trigger signals
         
         public float SMouseSensitivity = 5.0f;
-        public ToolType CurrentTool = ToolType.Select;
 
         // state that trigger signals
         
@@ -44,10 +43,24 @@ namespace CSC473.Scripts
             }
         }
 
+        private ToolType _currentTool = ToolType.Select;
+        public ToolType CurrentTool
+        {
+            get => _currentTool;
+            set
+            {
+                _currentTool = value;
+                EmitSignal(nameof(ToolTypeChanged), value);
+            }
+        }
+
         // // signals
 
         [Signal]
         public delegate void ControllingCameraChanged(bool enabled);
+
+        [Signal]
+        public delegate void ToolTypeChanged(ToolType newTool);
 
         // //
 
@@ -55,7 +68,6 @@ namespace CSC473.Scripts
         {
             // start with a random seed from system random
             _rng = new RandomNumberGenerator();
-            
             _rng.Seed = (ulong) new Random().Next() + (ulong) new Random().Next();
         }
 

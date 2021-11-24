@@ -5,9 +5,9 @@ namespace CSC473.Scripts
 {
     public enum HintObjectType
     {
-        StopSign,
-        TrafficLight,
-        Hazard
+        StopSign = 0,
+        TrafficLight = 1,
+        Hazard = 2
     }
     
     /// <summary>
