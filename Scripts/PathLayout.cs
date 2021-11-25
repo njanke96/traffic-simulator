@@ -31,37 +31,6 @@ namespace CSC473.Scripts
             // tuple is (index of path node u, index of path node v)
             _edges = new List<Tuple<int, int>>();
         }
-        
-        /// <summary>
-        /// Add a new object to the layout.
-        /// </summary>
-        /// <param name="obj"></param>
-        public void Add(BaseLayoutObject obj)
-        {
-            if (obj is PathNode pathNode)
-            {
-                // object added is a path node
-            }
-            else if (obj is HintObject hintObject)
-            {
-                // object added is a hint object
-            }
-            else
-            {
-                // object is something else
-                throw new ArgumentException("obj is not a PathNode or HintObject");
-            }
-        }
-
-        /// <summary>
-        /// Remove a path node by reference.
-        /// </summary>
-        /// <param name="obj"></param>
-        /// <returns>true on success false otherwise.</returns>
-        public bool Remove(BaseLayoutObject obj)
-        {
-            return true;
-        }
 
         public override void _Ready()
         {
@@ -100,6 +69,38 @@ namespace CSC473.Scripts
                 
                 // add the node
                 GD.Print("will add hint object");
+            }
+        }
+
+        /// <summary>
+        /// Callback for "input_event" signal from PathNodes
+        /// </summary>
+        /// <param name="camera"></param>
+        /// <param name="event"></param>
+        /// <param name="position"></param>
+        /// <param name="normal"></param>
+        /// <param name="shapeIdx"></param>
+        /// <param name="source">Source of the signal</param>
+        public void _PathNodeClicked(Node camera, InputEvent @event, Vector3 position, Vector3 normal, int shapeIdx, 
+            PathNode source)
+        {
+            if (!(@event is InputEventMouseButton evBtn))
+                return;
+            
+            if (evBtn.ButtonIndex != (int) ButtonList.Left || !evBtn.Pressed)
+                return;
+
+            if (_stateManager.CurrentTool == ToolType.Select)
+            {
+                GD.Print("Selected node: " + source);
+            }
+            else if (_stateManager.CurrentTool == ToolType.DeleteNode)
+            {
+                // remove from the local list and free from the tree
+                _pathNodes.Remove(source);
+                source.QueueFree();
+            
+                // TODO: fix edges
             }
         }
     }

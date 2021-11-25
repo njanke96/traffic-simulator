@@ -429,9 +429,9 @@ namespace CSC473.Scripts.Ui
             {
                 // restore default values
                 _nodeType.Selected = (int) PathNodeType.Enroute;
-                _speedLimit.Text = "50";
-                _minSpawnTimer.Text = "2.0";
-                _maxSpawnTimer.Text = "6.0";
+                _speedLimit.Text = PathNode.DefaultSpeedLimit.ToString();
+                _minSpawnTimer.Text = PathNode.DefaultSpawnMin.ToString(CultureInfo.InvariantCulture);
+                _maxSpawnTimer.Text = PathNode.DefaultSpawnMax.ToString(CultureInfo.InvariantCulture);
             }
             
             _nodeType.Disabled = !enabled;

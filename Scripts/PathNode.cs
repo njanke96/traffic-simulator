@@ -25,6 +25,8 @@ namespace CSC473.Scripts
         public float SpawnMin;
         public float SpawnMax;
 
+        private PathLayout _layout;
+
         public PathNode(PathNodeType type, int speedLimit = DefaultSpeedLimit, float spawnMin = DefaultSpawnMin, 
             float spawnMax = DefaultSpawnMax)
         {
@@ -57,11 +59,20 @@ namespace CSC473.Scripts
 
         public override void _Ready()
         {
+            // parent ref
+            _layout = GetParent<PathLayout>();
+            
             // instance the child scene
-            AddChild(ResourceLoader.Load<PackedScene>(ChildScene).Instance<Spatial>());
+            Spatial visNodeRoot = ResourceLoader.Load<PackedScene>(ChildScene).Instance<Spatial>();
+            AddChild(visNodeRoot);
             
+            // ref to area
+            Area clickArea = visNodeRoot.GetNode<Area>("ClickArea");
+
             // forward the clicked signal to the callback method in the PathLayout
-            
+            // according to godot docs this signal is disconnected automatically when this PathNode is freed
+            clickArea.Connect("input_event", _layout, nameof(PathLayout._PathNodeClicked),
+                new Godot.Collections.Array(this));
         }
     }
 }
