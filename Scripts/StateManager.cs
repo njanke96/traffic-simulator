@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using CSC473.Lib;
 using Godot;
 
 namespace CSC473.Scripts
@@ -46,6 +47,10 @@ namespace CSC473.Scripts
             get => _currentTool;
             set
             {
+                // clear current selection
+                CurrentSelection = null;
+                
+                // signal
                 _currentTool = value;
                 EmitSignal(nameof(ToolTypeChanged), value);
 
@@ -66,6 +71,17 @@ namespace CSC473.Scripts
             }
         }
 
+        private ISelectable _currentSelection;
+        public ISelectable CurrentSelection
+        {
+            get => _currentSelection;
+            set
+            {
+                _currentSelection = value;
+                EmitSignal(nameof(SelectionChanged));
+            }
+        }
+
         // the first node in a U->V link set with the link tool
         public PathNode LinkNodeU;
 
@@ -82,6 +98,9 @@ namespace CSC473.Scripts
 
         [Signal]
         public delegate void GroundPlaneClicked(Vector3 where);
+
+        [Signal]
+        public delegate void SelectionChanged();
 
         // //
 

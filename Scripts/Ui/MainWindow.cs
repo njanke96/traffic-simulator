@@ -56,6 +56,8 @@ namespace CSC473.Scripts.Ui
             _stateManager.Connect(nameof(StateManager.ToolTypeChanged), this, nameof(_CurrentToolChanged));
             _stateManager.Connect(nameof(StateManager.StatusLabelChangeRequest), this,
                 nameof(_StatusLabelChangeRequested));
+
+            _stateManager.Connect(nameof(StateManager.SelectionChanged), this, nameof(_SelectionChanged));
             
             // // get node refs
             _viewport3d = GetNode<Viewport>("OuterMargin/MainContainer/VPSidebar" +
@@ -116,6 +118,12 @@ namespace CSC473.Scripts.Ui
             _randSeed = GetNode<LineEdit>(sidebarPath + "/RandomSeedContainer/RandomSeed");
             _randSeed.Text = _stateManager.RngSeed;
             _randSeed.Connect("text_changed", this, nameof(_RandSeedChanged));
+            
+            // path node attribute changes
+            _nodeType.Connect("item_selected", this, nameof(_PathNodeAttrChanged));
+            _speedLimit.Connect("text_entered", this, nameof(_PathNodeAttrChanged));
+            _minSpawnTimer.Connect("text_entered", this, nameof(_PathNodeAttrChanged));
+            _maxSpawnTimer.Connect("text_entered", this, nameof(_PathNodeAttrChanged));
 
             // // preload 3d viewport scene (could use ResourceInteractiveLoader in future)
             Node root3d = ResourceLoader.Load<PackedScene>("res://3DView.tscn").Instance();
@@ -287,6 +295,58 @@ namespace CSC473.Scripts.Ui
             }
         }
 
+        public void _SelectionChanged()
+        {
+            ISelectable newSelection = _stateManager.CurrentSelection;
+            if (newSelection == null)
+            {
+                if (_stateManager.CurrentTool == ToolType.Select)
+                {
+                    // with the select tool in use, nothing is selected
+                    SetNodeControlsEnabled(false);
+                    SetHintObjControlsEnabled(false);
+                }
+
+                // nothing more to do when nothing is selected
+                return;
+            }
+            
+            SetNodeControlsEnabled(false);
+            SetHintObjControlsEnabled(false);
+
+            if (newSelection is PathNode pathNode)
+            {
+                // a path node was selected
+                SetNodeControlsEnabled(true);
+                
+                // set control values
+                _nodeType.Selected = (int) pathNode.NodeType;
+                _speedLimit.Text = pathNode.SpeedLimit.ToString();
+                _minSpawnTimer.Text = pathNode.SpawnMin.ToString(CultureInfo.InvariantCulture);
+                _maxSpawnTimer.Text = pathNode.SpawnMax.ToString(CultureInfo.InvariantCulture);
+            }
+        }
+
+        public void _PathNodeAttrChanged(params object[] paramz)
+        {
+            if (_stateManager.CurrentTool != ToolType.Select || _stateManager.CurrentSelection == null)
+                return;
+            
+            // get a new path node to copy the new settings from
+            PathNode newNode = PathNodeFromSettings();
+
+            if (!(_stateManager.CurrentSelection is PathNode selectedNode))
+                return;
+
+            selectedNode.NodeType = newNode.NodeType;
+            selectedNode.SpeedLimit = newNode.SpeedLimit;
+            selectedNode.SpawnMin = newNode.SpawnMin;
+            selectedNode.SpawnMax = newNode.SpawnMax;
+
+            // thanks fella
+            newNode.QueueFree();
+        }
+
         public void _FileMenuCallback(int id)
         {
             // id is the id of the item
@@ -329,10 +389,13 @@ namespace CSC473.Scripts.Ui
 
         // // public
 
+        /// <summary>
+        /// Returns a pathnode from the path node settings inputs after sanitizing inputs
+        /// </summary>
+        /// <returns></returns>
         public PathNode PathNodeFromSettings()
         {
             // handle bad input
-            
             int speedLimit;
             try
             {
@@ -369,6 +432,10 @@ namespace CSC473.Scripts.Ui
             return new PathNode((PathNodeType) _nodeType.Selected, speedLimit, spawnMin, spawnMax);
         }
 
+        /// <summary>
+        /// Returns a hint object from the hint object settings controls.
+        /// </summary>
+        /// <returns></returns>
         public HintObject HintObjectFromSettings()
         {
             return new HintObject((HintObjectType) _objType.Selected, _lightChannel.Selected, 

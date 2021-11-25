@@ -19,8 +19,21 @@ namespace CSC473.Scripts
         public const int DefaultSpeedLimit = 50;
         public const float DefaultSpawnMin = 2f;
         public const float DefaultSpawnMax = 6f;
-        
-        public PathNodeType NodeType;
+
+        private PathNodeType _nodeType;
+        public PathNodeType NodeType
+        {
+            get => _nodeType;
+            set
+            {
+                _nodeType = value;
+                
+                // reload child scene
+                SetChildSceneFromType();
+                GetChild(0).QueueFree();
+                InitChild();
+            }
+        }
         public int SpeedLimit;
         public float SpawnMin;
         public float SpawnMax;
@@ -30,12 +43,84 @@ namespace CSC473.Scripts
         public PathNode(PathNodeType type, int speedLimit = DefaultSpeedLimit, float spawnMin = DefaultSpawnMin, 
             float spawnMax = DefaultSpawnMax)
         {
-            NodeType = type;
+            _nodeType = type;
             SpeedLimit = speedLimit;
             SpawnMin = spawnMin;
             SpawnMax = spawnMax;
             
             // set child scene per node type
+            SetChildSceneFromType();
+        }
+
+        public ImmediateGeometry GetBoundingBox()
+        {
+            ImmediateGeometry ig = new ImmediateGeometry();
+            
+            // use vertex colors as albedo
+            SpatialMaterial mat = new SpatialMaterial();
+            mat.VertexColorUseAsAlbedo = true;
+            ig.MaterialOverride = mat;
+            
+            ig.Begin(Mesh.PrimitiveType.Lines);
+            ig.SetColor(Colors.Cyan);
+            
+            ig.AddVertex(new Vector3(0.5f, 0.5f, 0.5f));
+            ig.AddVertex(new Vector3(0.5f, 0.5f, -0.5f));
+            ig.AddVertex(new Vector3(0.5f, 0.5f, -0.5f));
+            ig.AddVertex(new Vector3(-0.5f, 0.5f, -0.5f));
+            ig.AddVertex(new Vector3(-0.5f, 0.5f, -0.5f));
+            ig.AddVertex(new Vector3(-0.5f, 0.5f, 0.5f));
+            ig.AddVertex(new Vector3(-0.5f, 0.5f, 0.5f));
+            ig.AddVertex(new Vector3(0.5f, 0.5f, 0.5f));
+            
+            ig.AddVertex(new Vector3(0.5f, -0.5f, 0.5f));
+            ig.AddVertex(new Vector3(0.5f, -0.5f, -0.5f));
+            ig.AddVertex(new Vector3(0.5f, -0.5f, -0.5f));
+            ig.AddVertex(new Vector3(-0.5f, -0.5f, -0.5f));
+            ig.AddVertex(new Vector3(-0.5f, -0.5f, -0.5f));
+            ig.AddVertex(new Vector3(-0.5f, -0.5f, 0.5f));
+            ig.AddVertex(new Vector3(-0.5f, -0.5f, 0.5f));
+            ig.AddVertex(new Vector3(0.5f, -0.5f, 0.5f));
+            
+            ig.AddVertex(new Vector3(0.5f, -0.5f, 0.5f));
+            ig.AddVertex(new Vector3(0.5f, 0.5f, 0.5f));
+            ig.AddVertex(new Vector3(0.5f, -0.5f, -0.5f));
+            ig.AddVertex(new Vector3(0.5f, 0.5f, -0.5f));
+            ig.AddVertex(new Vector3(-0.5f, -0.5f, -0.5f));
+            ig.AddVertex(new Vector3(-0.5f, 0.5f, -0.5f));
+            ig.AddVertex(new Vector3(-0.5f, -0.5f, 0.5f));
+            ig.AddVertex(new Vector3(-0.5f, 0.5f, 0.5f));
+
+            ig.End();
+            
+            return ig;
+        }
+
+        public override void _Ready()
+        {
+            // parent ref
+            _layout = GetParent<PathLayout>();
+
+            InitChild();
+        }
+
+        public void InitChild()
+        {
+            // instance the child scene
+            Spatial visNodeRoot = ResourceLoader.Load<PackedScene>(ChildScene).Instance<Spatial>();
+            AddChild(visNodeRoot);
+            
+            // ref to area
+            Area clickArea = visNodeRoot.GetNode<Area>("ClickArea");
+
+            // forward the clicked signal to the callback method in the PathLayout
+            // according to godot docs this signal is disconnected automatically when this PathNode is freed
+            clickArea.Connect("input_event", _layout, nameof(PathLayout._PathNodeClicked),
+                new Godot.Collections.Array(this));
+        }
+
+        private void SetChildSceneFromType()
+        {
             switch (NodeType)
             {
                 case PathNodeType.Start:
@@ -50,29 +135,6 @@ namespace CSC473.Scripts
                 default:
                     throw new ArgumentOutOfRangeException();
             }
-        }
-        
-        public ImmediateGeometry GetBoundingBox()
-        {
-            throw new NotImplementedException();
-        }
-
-        public override void _Ready()
-        {
-            // parent ref
-            _layout = GetParent<PathLayout>();
-            
-            // instance the child scene
-            Spatial visNodeRoot = ResourceLoader.Load<PackedScene>(ChildScene).Instance<Spatial>();
-            AddChild(visNodeRoot);
-            
-            // ref to area
-            Area clickArea = visNodeRoot.GetNode<Area>("ClickArea");
-
-            // forward the clicked signal to the callback method in the PathLayout
-            // according to godot docs this signal is disconnected automatically when this PathNode is freed
-            clickArea.Connect("input_event", _layout, nameof(PathLayout._PathNodeClicked),
-                new Godot.Collections.Array(this));
         }
     }
 }

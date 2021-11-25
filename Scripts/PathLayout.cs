@@ -18,7 +18,7 @@ namespace CSC473.Scripts
         
         private List<PathNode> _pathNodes;
         private List<HintObject> _hintObjects;
-        private HashSet<Tuple<int, int>> _edges;
+        private HashSet<Tuple<PathNode, PathNode>> _edges;
 
         private StateManager _stateManager;
         private MainWindow _mainWindow;
@@ -31,7 +31,7 @@ namespace CSC473.Scripts
             _hintObjects = new List<HintObject>();
 
             // tuple is (index of path node u, index of path node v)
-            _edges = new HashSet<Tuple<int, int>>();
+            _edges = new HashSet<Tuple<PathNode, PathNode>>();
         }
 
         public override void _Ready()
@@ -51,7 +51,12 @@ namespace CSC473.Scripts
         
         public void _GroundPlaneClicked(Vector3 clickPos)
         {
-            if (_stateManager.CurrentTool == ToolType.AddNode)
+            if (_stateManager.CurrentTool == ToolType.Select)
+            {
+                // clear any selection
+                _stateManager.CurrentSelection = null;
+            }
+            else if (_stateManager.CurrentTool == ToolType.AddNode)
             {
                 if (!GetTree().Paused)
                 {
@@ -105,17 +110,19 @@ namespace CSC473.Scripts
 
             if (_stateManager.CurrentTool == ToolType.Select)
             {
-                GD.Print("Selected node: " + source);
+                _stateManager.EmitSignal(nameof(StateManager.StatusLabelChangeRequest), 
+                    "Selected node: " + source.Name);
+
+                _stateManager.CurrentSelection = source;
             }
             else if (_stateManager.CurrentTool == ToolType.DeleteNode)
             {
                 // remove from the local list and free from the tree
-                int index = _pathNodes.IndexOf(source);
                 _pathNodes.Remove(source);
                 source.QueueFree();
             
                 // find broken edges and eliminate them
-                _edges.RemoveWhere(item => item.Item1 == index || item.Item2 == index);
+                _edges.RemoveWhere(item => item.Item1 == source || item.Item2 == source);
                 _edgeVisual.Rebuild(_edges, _pathNodes);
             }
             else if (_stateManager.CurrentTool == ToolType.LinkNodes)
@@ -141,8 +148,8 @@ namespace CSC473.Scripts
                     }
 
                     // add edge if possible
-                    var edge = new Tuple<int, int>(indexu, indexv);
-                    var edgeReverse = new Tuple<int, int>(indexv, indexu);
+                    var edge = new Tuple<PathNode, PathNode>(_stateManager.LinkNodeU, source);
+                    var edgeReverse = new Tuple<PathNode, PathNode>(source, _stateManager.LinkNodeU);
                     if (_edges.Contains(edgeReverse))
                     {
                         _stateManager.EmitSignal(nameof(StateManager.StatusLabelChangeRequest), 

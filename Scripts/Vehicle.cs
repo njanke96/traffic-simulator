@@ -193,7 +193,47 @@ namespace CSC473.Scripts
 
         public ImmediateGeometry GetBoundingBox()
         {
-            throw new System.NotImplementedException();
+            // one bounding box for all vehicle classes
+            ImmediateGeometry ig = new ImmediateGeometry();
+            
+            // use vertex colors as albedo
+            SpatialMaterial mat = new SpatialMaterial();
+            mat.VertexColorUseAsAlbedo = true;
+            ig.MaterialOverride = mat;
+            
+            ig.Begin(Mesh.PrimitiveType.Lines);
+            ig.SetColor(Colors.Cyan);
+            
+            ig.AddVertex(new Vector3(0.5f, 2.0f, 1.5f));
+            ig.AddVertex(new Vector3(0.5f, 2.0f, -1.5f));
+            ig.AddVertex(new Vector3(0.5f, 2.0f, -1.5f));
+            ig.AddVertex(new Vector3(-0.5f, 2.0f, -1.5f));
+            ig.AddVertex(new Vector3(-0.5f, 2.0f, -1.5f));
+            ig.AddVertex(new Vector3(-0.5f, 2.0f, 1.5f));
+            ig.AddVertex(new Vector3(-0.5f, 2.0f, 1.5f));
+            ig.AddVertex(new Vector3(0.5f, 2.0f, 1.5f));
+            
+            ig.AddVertex(new Vector3(0.5f, 0f, 1.5f));
+            ig.AddVertex(new Vector3(0.5f, 0f, -1.5f));
+            ig.AddVertex(new Vector3(0.5f, 0f, -1.5f));
+            ig.AddVertex(new Vector3(-0.5f, 0f, -1.5f));
+            ig.AddVertex(new Vector3(-0.5f, 0f, -1.5f));
+            ig.AddVertex(new Vector3(-0.5f, 0f, 1.5f));
+            ig.AddVertex(new Vector3(-0.5f, 0f, 1.5f));
+            ig.AddVertex(new Vector3(0.5f, 0f, 1.5f));
+            
+            ig.AddVertex(new Vector3(0.5f, 0f, 1.5f));
+            ig.AddVertex(new Vector3(0.5f, 2.0f, 1.5f));
+            ig.AddVertex(new Vector3(0.5f, 0f, -1.5f));
+            ig.AddVertex(new Vector3(0.5f, 2.0f, -1.5f));
+            ig.AddVertex(new Vector3(-0.5f, 0f, -1.5f));
+            ig.AddVertex(new Vector3(-0.5f, 2.0f, -1.5f));
+            ig.AddVertex(new Vector3(-0.5f, 0f, 1.5f));
+            ig.AddVertex(new Vector3(-0.5f, 2.0f, 1.5f));
+
+            ig.End();
+            
+            return ig;
         }
     }
 }

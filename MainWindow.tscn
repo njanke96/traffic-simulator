@@ -60,6 +60,7 @@ __meta__ = {
 }
 
 [node name="MenuButtons" type="HBoxContainer" parent="MainWindow/OuterMargin/MainContainer"]
+pause_mode = 2
 margin_right = 1008.0
 margin_bottom = 20.0
 size_flags_horizontal = 3
@@ -81,6 +82,7 @@ text = "Help"
 switch_on_hover = true
 
 [node name="ToolBar" type="HBoxContainer" parent="MainWindow/OuterMargin/MainContainer"]
+pause_mode = 2
 margin_top = 24.0
 margin_right = 1008.0
 margin_bottom = 48.0
@@ -179,6 +181,7 @@ size_flags_vertical = 3
 size_flags_stretch_ratio = 0.25
 
 [node name="SideBar" type="VBoxContainer" parent="MainWindow/OuterMargin/MainContainer/VPSidebar/ScrollContainer"]
+pause_mode = 2
 margin_right = 196.0
 margin_bottom = 506.0
 size_flags_horizontal = 3
