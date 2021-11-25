@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using CSC473.Scripts.Ui;
 using Godot;
 
 namespace CSC473.Scripts
@@ -20,6 +21,7 @@ namespace CSC473.Scripts
         private List<Tuple<int, int>> _edges;
 
         private StateManager _stateManager;
+        private MainWindow _mainWindow;
 
         public PathLayout()
         {
@@ -63,9 +65,13 @@ namespace CSC473.Scripts
 
         public override void _Ready()
         {
+            // state manager and signals
             _stateManager = GetNode<StateManager>("/root/StateManager");
             _stateManager.Connect(nameof(StateManager.GroundPlaneClicked), this, 
                 nameof(_GroundPlaneClicked));
+            
+            // find main window
+            _mainWindow = (MainWindow) FindParent("MainWindow");
         }
         
         public void _GroundPlaneClicked(Vector3 clickPos)
@@ -77,9 +83,12 @@ namespace CSC473.Scripts
                     _stateManager.EmitSignal(nameof(StateManager.StatusLabelChangeRequest), PausePrompt);
                     return;
                 }
-                
+
                 // add the node
-                GD.Print("will add node");
+                PathNode node = _mainWindow.PathNodeFromSettings();
+                node.Transform = new Transform(Basis.Identity, clickPos);
+                _pathNodes.Add(node);
+                AddChild(node);
             }
             else if (_stateManager.CurrentTool == ToolType.AddHintObject)
             {

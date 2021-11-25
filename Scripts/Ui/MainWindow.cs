@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using CSC473.Lib;
 using Godot;
 
@@ -327,6 +328,52 @@ namespace CSC473.Scripts.Ui
         }
 
         // // public
+
+        public PathNode PathNodeFromSettings()
+        {
+            // handle bad input
+            
+            int speedLimit;
+            try
+            {
+                speedLimit = int.Parse(_speedLimit.Text);
+            }
+            catch (FormatException)
+            {
+                _speedLimit.Text = PathNode.DefaultSpeedLimit.ToString();
+                speedLimit = PathNode.DefaultSpeedLimit;
+            }
+            
+            float spawnMin;
+            try
+            {
+                spawnMin = float.Parse(_minSpawnTimer.Text);
+            }
+            catch (FormatException)
+            {
+                _minSpawnTimer.Text = PathNode.DefaultSpawnMin.ToString(CultureInfo.InvariantCulture);
+                spawnMin = PathNode.DefaultSpawnMin;
+            }
+
+            float spawnMax;
+            try
+            {
+                spawnMax = float.Parse(_maxSpawnTimer.Text);
+            }
+            catch (FormatException)
+            {
+                _maxSpawnTimer.Text = PathNode.DefaultSpawnMax.ToString(CultureInfo.InvariantCulture);
+                spawnMax = PathNode.DefaultSpawnMax;
+            }
+
+            return new PathNode((PathNodeType) _nodeType.Selected, speedLimit, spawnMin, spawnMax);
+        }
+
+        public HintObject HintObjectFromSettings()
+        {
+            return new HintObject((HintObjectType) _objType.Selected, _lightChannel.Selected, 
+                (int) _hintObjRot.Value);
+        }
         
         // return value of OpenFileDialog and SaveFileDialog is complicated
         // non-empty string means it was a windows dialog and a file was selected

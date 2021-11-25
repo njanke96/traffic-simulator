@@ -88,3 +88,5 @@ shape = ExtResource( 6 )
 
 [node name="PathLayout" type="Node" parent="."]
 script = ExtResource( 5 )
+
+[node name="VehiclesRoot" type="Node" parent="."]

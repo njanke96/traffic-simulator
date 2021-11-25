@@ -16,12 +16,23 @@ namespace CSC473.Scripts
     
     public class PathNode : BaseLayoutObject, ISelectable
     {
+        public const int DefaultSpeedLimit = 50;
+        public const float DefaultSpawnMin = 2f;
+        public const float DefaultSpawnMax = 6f;
+        
         public PathNodeType NodeType;
+        public int SpeedLimit;
+        public float SpawnMin;
+        public float SpawnMax;
 
-        public PathNode(PathNodeType type)
+        public PathNode(PathNodeType type, int speedLimit = DefaultSpeedLimit, float spawnMin = DefaultSpawnMin, 
+            float spawnMax = DefaultSpawnMax)
         {
             NodeType = type;
-
+            SpeedLimit = speedLimit;
+            SpawnMin = spawnMin;
+            SpawnMax = spawnMax;
+            
             // set child scene per node type
             switch (NodeType)
             {

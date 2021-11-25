@@ -18,13 +18,9 @@ namespace CSC473.Scripts
     public class StateManager : Node
     {
         // // Public state
-        
-        // state that do not trigger signals
-        
+
         public float SMouseSensitivity = 5.0f;
 
-        // state that trigger signals
-        
         private RandomNumberGenerator _rng;
         public string RngSeed
         {

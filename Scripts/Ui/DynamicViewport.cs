@@ -1,12 +1,11 @@
 using Godot;
-using System;
 
 namespace CSC473.Scripts.Ui
 {
     /// <summary>
     /// Fix for viewport not resizing when parent viewportcontainer resizes.
     /// </summary>
-    public class DynamicViewport : Godot.Viewport
+    public class DynamicViewport : Viewport
     {
         public override void _Ready()
         {

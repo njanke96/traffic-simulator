@@ -270,36 +270,12 @@ namespace CSC473.Scripts
             // vehicle controller
             var controller = new AIVehicleController();
             
+            // TODO: spawned vehicles should be children of the VehiclesRoot Node
             vehicle.AddChild(controller);
             GetParent().AddChild(vehicle);
             
             // set color
             vehicle.BodyColor = color;
-
-            /*
-            // make a sedan
-            var vehicleclass = new SportsUtility();
-            
-            // make a vehicle from sedan
-            Vehicle vehSedan = new Vehicle(
-                vehicleclass.ModelPath(),
-                vehicleclass.CollisionShapePath(),
-                vehicleclass.EnginePerf(),
-                vehicleclass.SteerRatio(),
-                vehicleclass.ColorMaterialIndex(),
-                vehicleclass.WheelRadius(),
-                vehicleclass.SuspTravel(),
-                vehicleclass.StrutLen(),
-                vehicleclass.Mass(),
-                vehicleclass.TranslateZ()
-            );
-            
-            // human vehicle controller
-            var controller = new HumanVehicleController();
-            
-            vehSedan.AddChild(controller);
-            GetParent().AddChild(vehSedan);
-            */
         }
 
         private void InitVehiclePool()

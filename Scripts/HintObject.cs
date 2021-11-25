@@ -17,6 +17,7 @@ namespace CSC473.Scripts
     public class HintObject : BaseLayoutObject, ISelectable
     {
         public HintObjectType HintType;
+        public int Channel;
 
         private int _hintRotation;
         public int HintRotation
@@ -27,6 +28,13 @@ namespace CSC473.Scripts
                 _hintRotation = value;
                 RotationDegrees = new Vector3(0f, value, 0f);
             }
+        }
+
+        public HintObject(HintObjectType type, int channel, int rotation)
+        {
+            HintType = type;
+            Channel = channel;
+            HintRotation = rotation;
         }
 
         public ImmediateGeometry GetBoundingBox()
