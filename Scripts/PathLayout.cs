@@ -18,10 +18,12 @@ namespace CSC473.Scripts
         
         private List<PathNode> _pathNodes;
         private List<HintObject> _hintObjects;
-        private List<Tuple<int, int>> _edges;
+        private HashSet<Tuple<int, int>> _edges;
 
         private StateManager _stateManager;
         private MainWindow _mainWindow;
+
+        private EdgeVisual _edgeVisual;
 
         public PathLayout()
         {
@@ -29,7 +31,7 @@ namespace CSC473.Scripts
             _hintObjects = new List<HintObject>();
 
             // tuple is (index of path node u, index of path node v)
-            _edges = new List<Tuple<int, int>>();
+            _edges = new HashSet<Tuple<int, int>>();
         }
 
         public override void _Ready()
@@ -41,6 +43,10 @@ namespace CSC473.Scripts
             
             // find main window
             _mainWindow = (MainWindow) FindParent("MainWindow");
+            
+            // edge visual
+            _edgeVisual = new EdgeVisual();
+            AddChild(_edgeVisual);
         }
         
         public void _GroundPlaneClicked(Vector3 clickPos)
@@ -89,6 +95,13 @@ namespace CSC473.Scripts
             
             if (evBtn.ButtonIndex != (int) ButtonList.Left || !evBtn.Pressed)
                 return;
+            
+            // pause check
+            if (_stateManager.CurrentTool != ToolType.Select && !GetTree().Paused)
+            {
+                _stateManager.EmitSignal(nameof(StateManager.StatusLabelChangeRequest), PausePrompt);
+                return;
+            }
 
             if (_stateManager.CurrentTool == ToolType.Select)
             {
@@ -97,10 +110,61 @@ namespace CSC473.Scripts
             else if (_stateManager.CurrentTool == ToolType.DeleteNode)
             {
                 // remove from the local list and free from the tree
+                int index = _pathNodes.IndexOf(source);
                 _pathNodes.Remove(source);
                 source.QueueFree();
             
-                // TODO: fix edges
+                // find broken edges and eliminate them
+                _edges.RemoveWhere(item => item.Item1 == index || item.Item2 == index);
+                _edgeVisual.Rebuild(_edges, _pathNodes);
+            }
+            else if (_stateManager.CurrentTool == ToolType.LinkNodes)
+            {
+                if (_stateManager.LinkNodeU == null)
+                {
+                    // this node is the first one clicked
+                    _stateManager.LinkNodeU = source;
+                    _stateManager.EmitSignal(nameof(StateManager.StatusLabelChangeRequest),
+                        $"Linking node {source.Name} -> ");
+                }
+                else
+                {
+                    // this node is the second one clicked
+                    int indexu = _pathNodes.IndexOf(_stateManager.LinkNodeU);
+                    int indexv = _pathNodes.IndexOf(source);
+                    
+                    // check for node not found
+                    if (indexu == -1 || indexv == -1)
+                    {
+                        // this indicates a path node somehow exists without being added to _pathNodes
+                        throw new IndexOutOfRangeException($"indexu: {indexu}, indexv: {indexv}");
+                    }
+
+                    // add edge if possible
+                    var edge = new Tuple<int, int>(indexu, indexv);
+                    var edgeReverse = new Tuple<int, int>(indexv, indexu);
+                    if (_edges.Contains(edgeReverse))
+                    {
+                        _stateManager.EmitSignal(nameof(StateManager.StatusLabelChangeRequest), 
+                            "Two-way links are not supported.");
+                    }
+                    else
+                    {
+                        if (_edges.Add(edge))
+                        {
+                            _stateManager.EmitSignal(nameof(StateManager.StatusLabelChangeRequest), 
+                                $"Linked node {_stateManager.LinkNodeU.Name} -> {source.Name}");
+                        }
+                        else
+                        {
+                            _stateManager.EmitSignal(nameof(StateManager.StatusLabelChangeRequest), 
+                                $"{_stateManager.LinkNodeU.Name} is already linked to {source.Name}");
+                        }
+                    }
+                    
+                    _stateManager.LinkNodeU = null;
+                    _edgeVisual.Rebuild(_edges, _pathNodes);
+                }
             }
         }
     }

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Godot;
 
 namespace CSC473.Scripts
@@ -47,8 +48,26 @@ namespace CSC473.Scripts
             {
                 _currentTool = value;
                 EmitSignal(nameof(ToolTypeChanged), value);
+
+                // tool change status message
+                var toolNameMap = new Dictionary<ToolType, string>
+                {
+                    [ToolType.Select] = "Select",
+                    [ToolType.AddNode] = "Add Node",
+                    [ToolType.DeleteNode] = "Delete Node",
+                    [ToolType.LinkNodes] = "Link Nodes",
+                    [ToolType.AddHintObject] = "Add Hint Object"
+                };
+
+                EmitSignal(nameof(StatusLabelChangeRequest), $"Current tool: {toolNameMap[value]}");
+                
+                // ensure this is reset
+                LinkNodeU = null;
             }
         }
+
+        // the first node in a U->V link set with the link tool
+        public PathNode LinkNodeU;
 
         // // signals
 
