@@ -183,7 +183,7 @@ size_flags_stretch_ratio = 0.25
 [node name="SideBar" type="VBoxContainer" parent="MainWindow/OuterMargin/MainContainer/VPSidebar/ScrollContainer"]
 pause_mode = 2
 margin_right = 196.0
-margin_bottom = 506.0
+margin_bottom = 474.0
 size_flags_horizontal = 3
 custom_constants/separation = 8
 
@@ -393,19 +393,12 @@ margin_top = 418.0
 margin_right = 196.0
 margin_bottom = 442.0
 pressed = true
-text = "Nodes are Visible"
+text = "Node graph visible"
 
-[node name="EdgesVisible" type="CheckBox" parent="MainWindow/OuterMargin/MainContainer/VPSidebar/ScrollContainer/SideBar"]
+[node name="RandomSeedContainer" type="HBoxContainer" parent="MainWindow/OuterMargin/MainContainer/VPSidebar/ScrollContainer/SideBar"]
 margin_top = 450.0
 margin_right = 196.0
 margin_bottom = 474.0
-pressed = true
-text = "Edges Are Visible"
-
-[node name="RandomSeedContainer" type="HBoxContainer" parent="MainWindow/OuterMargin/MainContainer/VPSidebar/ScrollContainer/SideBar"]
-margin_top = 482.0
-margin_right = 196.0
-margin_bottom = 506.0
 __meta__ = {
 "_edit_use_anchors_": false
 }

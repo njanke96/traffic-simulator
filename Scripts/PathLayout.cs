@@ -40,6 +40,8 @@ namespace CSC473.Scripts
             _stateManager = GetNode<StateManager>("/root/StateManager");
             _stateManager.Connect(nameof(StateManager.GroundPlaneClicked), this, 
                 nameof(_GroundPlaneClicked));
+            _stateManager.Connect(nameof(StateManager.NodeVisChanged), this, 
+                nameof(_NodeVisibilityChanged));
             
             // find main window
             _mainWindow = (MainWindow) FindParent("MainWindow");
@@ -173,6 +175,11 @@ namespace CSC473.Scripts
                     _edgeVisual.Rebuild(_edges, _pathNodes);
                 }
             }
+        }
+
+        public void _NodeVisibilityChanged()
+        {
+            Visible = _stateManager.NodesVisible;
         }
     }
 }

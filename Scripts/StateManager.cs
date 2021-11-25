@@ -85,6 +85,18 @@ namespace CSC473.Scripts
         // the first node in a U->V link set with the link tool
         public PathNode LinkNodeU;
 
+        private bool _nodesVisible;
+
+        public bool NodesVisible
+        {
+            get => _nodesVisible;
+            set
+            {
+                _nodesVisible = value;
+                EmitSignal(nameof(NodeVisChanged));
+            }
+        }
+
         // // signals
 
         [Signal]
@@ -101,6 +113,9 @@ namespace CSC473.Scripts
 
         [Signal]
         public delegate void SelectionChanged();
+
+        [Signal]
+        public delegate void NodeVisChanged();
 
         // //
 

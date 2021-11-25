@@ -34,6 +34,7 @@ namespace CSC473.Scripts.Ui
         private LineEdit _randSeed;
 
         private PopupMenu _fileMenu;
+        private CheckBox _nodesVisible;
         
         // toolbar
         private Button _playButton;
@@ -118,6 +119,9 @@ namespace CSC473.Scripts.Ui
             _randSeed = GetNode<LineEdit>(sidebarPath + "/RandomSeedContainer/RandomSeed");
             _randSeed.Text = _stateManager.RngSeed;
             _randSeed.Connect("text_changed", this, nameof(_RandSeedChanged));
+
+            _nodesVisible = GetNode<CheckBox>(sidebarPath + "/NodesVisible");
+            _nodesVisible.Connect("pressed", this, nameof(_NodeVisibilityChange));
             
             // path node attribute changes
             _nodeType.Connect("item_selected", this, nameof(_PathNodeAttrChanged));
@@ -224,6 +228,11 @@ namespace CSC473.Scripts.Ui
                     break;
                 }
             }
+        }
+
+        public void _NodeVisibilityChange()
+        {
+            _stateManager.NodesVisible = _nodesVisible.Pressed;
         }
 
         public void _RandSeedChanged(string newText)
