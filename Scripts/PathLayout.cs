@@ -12,7 +12,7 @@ namespace CSC473.Scripts
     /// This node is to be dynamically created by the state manager.
     /// ALL Children of this node are assumed to be PathNode or HintObject instances.
     /// </summary>
-    public class PathLayout : Node
+    public class PathLayout : Spatial
     {
         public const string PausePrompt = "Pause the simulation before making changes to the path node graph.";
         

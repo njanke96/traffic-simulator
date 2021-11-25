@@ -86,7 +86,7 @@ physics_material_override = SubResource( 6 )
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, 0 )
 shape = ExtResource( 6 )
 
-[node name="PathLayout" type="Node" parent="."]
+[node name="PathLayout" type="Spatial" parent="."]
 script = ExtResource( 5 )
 
-[node name="VehiclesRoot" type="Node" parent="."]
+[node name="VehiclesRoot" type="Spatial" parent="."]
