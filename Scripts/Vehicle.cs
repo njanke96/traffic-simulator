@@ -102,6 +102,8 @@ namespace CSC473.Scripts
                 ResourceLoader.Load<PackedScene>(_collisionShapePath)
                     .Instance<CollisionShape>();
 
+            CollisionLayer = 1 & 2;
+
             // vehicle body (for color changing)
             _body = (MeshInstance) mesh.FindNode("body");
             

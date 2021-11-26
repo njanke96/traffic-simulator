@@ -18,6 +18,10 @@ config/icon="res://icon.png"
 
 StateManager="*res://Scripts/StateManager.cs"
 
+[global]
+
+layer=false
+
 [input]
 
 ui_left={
@@ -110,6 +114,13 @@ drive_right={
 , Object(InputEventJoypadMotion,"resource_local_to_scene":false,"resource_name":"","device":0,"axis":0,"axis_value":1.0,"script":null)
  ]
 }
+
+[layer_names]
+
+3d_physics/layer_1="misc"
+3d_physics/layer_2="vehicles"
+3d_physics/layer_3="ai rays"
+3d_physics/layer_4="hint areas"
 
 [physics]
 
