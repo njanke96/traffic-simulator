@@ -26,6 +26,8 @@ namespace CSC473.Scripts
                 _body.SetSurfaceMaterial(_colorMaterialIndex, material);
             }
         }
+        
+        private StateManager _stateManager;
 
         // rigidbody properties
         private readonly float _mass;
@@ -45,6 +47,18 @@ namespace CSC473.Scripts
         
         // other attributes
         private readonly float _translateZ;
+        public string ClassName = "none set";
+        
+        // speed getter (km/h)
+        public float Speed
+        {
+            get => LinearVelocity.Length() * 3.6f;
+            set
+            {
+                Vector3 normv = LinearVelocity.Normalized();
+                LinearVelocity = normv * value;
+            }
+        }
 
         /// <summary>
         /// The default constructor is intended for debugging, when attaching this script to a VehicleBody
@@ -77,9 +91,10 @@ namespace CSC473.Scripts
         /// <param name="strutLen">Total strut length.</param>
         /// <param name="mass">The mass. For reference, a small sedan seems to be 100 units of mass.</param>
         /// <param name="translateZ">How much to translate the vehicle body on the z axis</param>
+        /// <param name="className">Human readible name of vehicle class</param>
         public Vehicle(string modelPath, string collisionShapePath, float enginePerf, float steerRatio, 
             int colorMaterialIndex, float wheelRadius, float suspTravel, float strutLen, 
-            float mass, float translateZ)
+            float mass, float translateZ, string className)
         {
             _modelPath = modelPath;
             _collisionShapePath = collisionShapePath;
@@ -91,10 +106,13 @@ namespace CSC473.Scripts
             _strutLen = strutLen;
             _mass = mass;
             _translateZ = translateZ;
+            ClassName = className;
         }
 
         public override void _Ready()
         {
+            _stateManager = GetNode<StateManager>("/root/StateManager");
+            
             Spatial mesh =
                 ResourceLoader.Load<PackedScene>(_modelPath).Instance<Spatial>();
 
@@ -102,7 +120,8 @@ namespace CSC473.Scripts
                 ResourceLoader.Load<PackedScene>(_collisionShapePath)
                     .Instance<CollisionShape>();
 
-            CollisionLayer = 1 & 2;
+            SetCollisionLayerBit(2, true);
+            SetCollisionMaskBit(2, true);
 
             // vehicle body (for color changing)
             _body = (MeshInstance) mesh.FindNode("body");
@@ -191,6 +210,21 @@ namespace CSC473.Scripts
             // finally add the mesh and collision shape as children
             AddChild(mesh);
             AddChild(cs);
+        }
+
+        public override void _InputEvent(Object camera, InputEvent @event, Vector3 position, Vector3 normal, int shapeIdx)
+        {
+            if (!(@event is InputEventMouseButton evBtn))
+                return;
+            
+            if (evBtn.ButtonIndex != (int) ButtonList.Left || !evBtn.Pressed)
+                return;
+
+            if (_stateManager.CurrentTool != ToolType.Select)
+                return;
+            
+            // i have been selected
+            _stateManager.CurrentSelection = this;
         }
 
         public ImmediateGeometry GetBoundingBox()

@@ -30,6 +30,7 @@ namespace CSC473.Scripts
         private SceneTree _sceneTree;
 
         private EdgeVisual _edgeVisual;
+        public Spatial VehiclesRoot;
 
         public PathLayout()
         {
@@ -45,7 +46,7 @@ namespace CSC473.Scripts
         /// <summary>
         /// (re)Build the shortest path lists in the shortest paths dictionary
         /// </summary>
-        public void RebuildShortestPathLists()
+        private void RebuildShortestPathLists()
         {
             _shortestPaths.Clear();
 
@@ -157,6 +158,9 @@ namespace CSC473.Scripts
             // edge visual
             _edgeVisual = new EdgeVisual();
             AddChild(_edgeVisual);
+            
+            // vehicles root
+            VehiclesRoot = GetParent().GetNode<Spatial>("VehiclesRoot");
         }
 
         public override void _Process(float delta)

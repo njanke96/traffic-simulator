@@ -17,6 +17,18 @@ namespace CSC473.Scripts
                 nameof(_SelectionChanged));
         }
 
+        public override void _Process(float delta)
+        {
+            if (_stateManager.CurrentSelection == null)
+                return;
+
+            if (!(_stateManager.CurrentSelection is Vehicle selectedVehicle)) 
+                return;
+            
+            // bounding box can move
+            _SelectionChanged();
+        }
+
         public void _SelectionChanged()
         {
             // clear children

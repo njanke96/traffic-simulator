@@ -118,9 +118,8 @@ drive_right={
 [layer_names]
 
 3d_physics/layer_1="misc"
-3d_physics/layer_2="vehicles"
+3d_physics/layer_2="vehicles and obstacles"
 3d_physics/layer_3="ai rays"
-3d_physics/layer_4="hint areas"
 
 [physics]
 

@@ -16,7 +16,7 @@ namespace CSC473.Scripts
     
     public class PathNode : BaseLayoutObject, ISelectable
     {
-        public const int DefaultSpeedLimit = 50;
+        public const int DefaultSpeedLimit = 30;
         public const float DefaultSpawnMin = 2f;
         public const float DefaultSpawnMax = 6f;
 
@@ -39,6 +39,7 @@ namespace CSC473.Scripts
         public float SpawnMax;
 
         private PathLayout _layout;
+        private VehicleSpawner _vehicleSpawner;
 
         public PathNode(PathNodeType type, int speedLimit = DefaultSpeedLimit, float spawnMin = DefaultSpawnMin, 
             float spawnMax = DefaultSpawnMax)
@@ -102,6 +103,37 @@ namespace CSC473.Scripts
             _layout = GetParent<PathLayout>();
 
             InitChild();
+
+            if (NodeType == PathNodeType.Start)
+            {
+                CreateVehicleSpawner();
+            }
+        }
+
+        /// <summary>
+        /// Creates a new vehicle spawner attached to this node, removing an old one if necessary
+        /// </summary>
+        public void CreateVehicleSpawner()
+        {
+            // this path node may already have a spawner, if that is the case, free it
+            RemoveVehicleSpawner();
+            _vehicleSpawner = new VehicleSpawner(_layout.VehiclesRoot, SpawnMin, SpawnMax);
+            AddChild(_vehicleSpawner);
+        }
+
+        /// <summary>
+        /// Removes a vehicle spawner, if it exists
+        /// </summary>
+        public void RemoveVehicleSpawner()
+        {
+            try
+            {
+                _vehicleSpawner?.QueueFree();
+            }
+            catch (ObjectDisposedException)
+            {
+                _vehicleSpawner = null;
+            }
         }
 
         private void InitChild()

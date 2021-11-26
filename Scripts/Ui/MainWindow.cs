@@ -27,6 +27,9 @@ namespace CSC473.Scripts.Ui
         private LineEdit _minSpawnTimer;
         private LineEdit _maxSpawnTimer;
 
+        private Label _vehicleClass;
+        private Label _vehicleSpeed;
+
         private OptionButton _objType;
         private OptionButton _lightChannel;
         private Slider _hintObjRot;
@@ -106,6 +109,9 @@ namespace CSC473.Scripts.Ui
             _speedLimit = GetNode<LineEdit>(sidebarPath + "/SpeedLimitContainer/SpeedLimit");
             _minSpawnTimer = GetNode<LineEdit>(sidebarPath + "/MinSpawnTimerContainer/MinSpawnTimer");
             _maxSpawnTimer = GetNode<LineEdit>(sidebarPath + "/MaxSpawnTimerContainer/MaxSpawnTimer");
+            
+            _vehicleClass = GetNode<Label>(sidebarPath + "/LVehClass");
+            _vehicleSpeed = GetNode<Label>(sidebarPath + "/LVehSpeed");
 
             _objType = GetNode<OptionButton>(sidebarPath + "/ObjTypeContainer/ObjType");
             _objType.AddItem("Traffic Light", (int) HintObjectType.TrafficLight);
@@ -184,6 +190,16 @@ namespace CSC473.Scripts.Ui
             // force control states and default values
             SetNodeControlsEnabled(false);
             SetHintObjControlsEnabled(false);
+        }
+
+        public override void _Process(float delta)
+        {
+            if (_stateManager.CurrentSelection is Vehicle vehicle)
+            {
+                // a vehicle is selected and needs its speed updated
+                UpdateVehicleClassAndSpeed($"Class: {vehicle.ClassName}", 
+                    $"Speed: {(int) vehicle.Speed} km/h");
+            }
         }
 
         // // Callbacks
@@ -324,6 +340,7 @@ namespace CSC473.Scripts.Ui
                     // with the select tool in use, nothing is selected
                     SetNodeControlsEnabled(false);
                     SetHintObjControlsEnabled(false);
+                    UpdateVehicleClassAndSpeed(null, null);
                 }
 
                 // nothing more to do when nothing is selected
@@ -332,6 +349,7 @@ namespace CSC473.Scripts.Ui
             
             SetNodeControlsEnabled(false);
             SetHintObjControlsEnabled(false);
+            UpdateVehicleClassAndSpeed(null, null);
 
             if (newSelection is PathNode pathNode)
             {
@@ -353,6 +371,12 @@ namespace CSC473.Scripts.Ui
                 _lightChannel.Selected = hintObject.Channel;
                 _hintObjRot.Value = hintObject.HintRotation;
             }
+            else if (newSelection is Vehicle vehicle)
+            {
+                // a vehicle was selected
+                UpdateVehicleClassAndSpeed($"Class: {vehicle.ClassName}", 
+                    $"Speed: {(int) vehicle.Speed} km/h");
+            }
         }
 
         public void _PathNodeAttrChanged(params object[] paramz)
@@ -370,6 +394,11 @@ namespace CSC473.Scripts.Ui
             selectedNode.SpeedLimit = newNode.SpeedLimit;
             selectedNode.SpawnMin = newNode.SpawnMin;
             selectedNode.SpawnMax = newNode.SpawnMax;
+            
+            selectedNode.RemoveVehicleSpawner();
+            if (selectedNode.NodeType == PathNodeType.Start)
+                selectedNode.CreateVehicleSpawner();
+
             _stateManager.ShortestPathNeedsRebuild = true;
 
             // thanks fella
@@ -576,6 +605,23 @@ namespace CSC473.Scripts.Ui
             _objType.Disabled = !enabled;
             _lightChannel.Disabled = !enabled;
             _hintObjRot.Editable = enabled;
+        }
+
+        /// <summary>
+        /// Update vehicle detail labels. Pass null to either argument to show N/A
+        /// </summary>
+        /// <param name="vehClass"></param>
+        /// <param name="speed"></param>
+        private void UpdateVehicleClassAndSpeed(string vehClass, string speed)
+        {
+            if (vehClass == null || speed == null)
+            {
+                _vehicleClass.Text = "Class: N/A";
+                _vehicleSpeed.Text = "Speed: N/A";
+            }
+            
+            _vehicleClass.Text = $"Class: {vehClass}";
+            _vehicleSpeed.Text = $"Speed: {speed}";
         }
 
         // // statics

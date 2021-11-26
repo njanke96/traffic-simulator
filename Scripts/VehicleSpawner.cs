@@ -210,20 +210,68 @@ namespace CSC473.Scripts
         // the cumulative sum of spawn chances must equal 1.0 for the spawner to work properly.
         private List<(VehiclePerformanceClass, float)> _vehiclePool;
         private List<Color> _colorPool;
+        
+        // the node to add spawned vehicles as children to
+        private readonly Node _vehiclesRoot;
+        public float SpawnMin;
+        public float SpawnMax;
 
-        public VehicleSpawner()
+        /// <summary>
+        /// Constructor used in code.
+        /// </summary>
+        /// <param name="vehiclesRoot"></param>
+        /// <param name="spawnMin"></param>
+        /// <param name="spawnMax"></param>
+        public VehicleSpawner(Node vehiclesRoot, float spawnMin, float spawnMax)
         {
-            Autostart = true;
-            OneShot = false;
-            WaitTime = 5.0f;
+            _vehiclesRoot = vehiclesRoot;
+            SpawnMin = spawnMin;
+            SpawnMax = spawnMax;
+            SetUp();
+        }
+
+        private void SetUp()
+        {
+            Autostart = false;
+            OneShot = true;
             PauseMode = PauseModeEnum.Stop;
             InitVehiclePool();
+        }
+        
+        private void InitVehiclePool()
+        {
+            // spawn pool and weights
+            _vehiclePool = new List<(VehiclePerformanceClass, float)>
+            {
+                (new Sedan(), 0.3f),
+                (new Van(), 0.1f),
+                (new Delivery(), 0.1f),
+                (new SportsCar(), 0.2f),
+                (new SportsUtility(), 0.3f)
+            };
+
+            // color pool (equal chance)
+            _colorPool = new List<Color>
+            {
+                Colors.LightGray,
+                Colors.LightSlateGray,
+                Colors.DodgerBlue,
+                Colors.RoyalBlue,
+                Colors.LightGreen,
+                Colors.PaleGreen,
+                Colors.LightCoral,
+                Colors.Firebrick,
+                Colors.DarkOrange,
+                Colors.Yellow,
+                Colors.Violet
+            };
         }
 
         public override void _Ready()
         {
             _stateManager = GetNode<StateManager>("/root/StateManager");
             Connect("timeout", this, nameof(_TimerCallback));
+            Start(SpawnMin);
         }
 
         public void _TimerCallback()
@@ -262,49 +310,28 @@ namespace CSC473.Scripts
                 perfClass.SuspTravel(),
                 perfClass.StrutLen(),
                 perfClass.Mass(),
-                perfClass.TranslateZ()
+                perfClass.TranslateZ(),
+                perfClass.GetType().Name
             );
 
             vehicle.PauseMode = PauseModeEnum.Stop;
+            
+            // transform vehicle xz to origin of pathnode
+            Vector3 parentOrigin = GetParent<Spatial>().Transform.origin;
+            vehicle.Translate(new Vector3(parentOrigin.x, 0, parentOrigin.z));
 
             // vehicle controller
-            var controller = new AIVehicleController();
+            AIVehicleController controller = new AIVehicleController();
             
-            // TODO: spawned vehicles should be children of the VehiclesRoot Node
             vehicle.AddChild(controller);
-            GetParent().AddChild(vehicle);
+            _vehiclesRoot.AddChild(vehicle);
             
             // set color
             vehicle.BodyColor = color;
-        }
-
-        private void InitVehiclePool()
-        {
-            // spawn pool
-            _vehiclePool = new List<(VehiclePerformanceClass, float)>
-            {
-                (new Sedan(), 0.2f),
-                (new Van(), 0.2f),
-                (new Delivery(), 0.2f),
-                (new SportsCar(), 0.2f),
-                (new SportsUtility(), 0.2f)
-            };
-
-            // color pool (equal chance)
-            _colorPool = new List<Color>
-            {
-                Colors.LightGray,
-                Colors.LightSlateGray,
-                Colors.DodgerBlue,
-                Colors.RoyalBlue,
-                Colors.LightGreen,
-                Colors.PaleGreen,
-                Colors.LightCoral,
-                Colors.Firebrick,
-                Colors.DarkOrange,
-                Colors.Yellow,
-                Colors.Violet
-            };
+            
+            // next spawn
+            int spawnTimeoutMillis = _stateManager.RandInt((int) SpawnMin * 1000, (int) SpawnMax * 1000);
+            Start(spawnTimeoutMillis / 1000f);
         }
     }
 }
