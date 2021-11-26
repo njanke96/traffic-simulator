@@ -27,6 +27,7 @@ namespace CSC473.Scripts
         private int _hintRotation;
         
         private PathLayout _layout;
+        private StateManager _stateManager;
         
         public int HintRotation
         {
@@ -50,6 +51,7 @@ namespace CSC473.Scripts
             PauseMode = PauseModeEnum.Process;
 
             _layout = GetParent<PathLayout>();
+            _stateManager = GetNode<StateManager>("/root/StateManager");
             
             // only traffic lights supported at this time
             if (HintType != HintObjectType.TrafficLight)
@@ -77,6 +79,22 @@ namespace CSC473.Scripts
                 nameof(PathLayout._HintObjectClicked), new Godot.Collections.Array(this));
             
             AddChild(root);
+        }
+
+        public override void _PhysicsProcess(float delta)
+        {
+            if (_stateManager.CurrentGreenChannel == Channel)
+            {
+                // it's green
+                _greenMat.AlbedoColor = new Color(0f, 1f, 0f);
+                _redMat.AlbedoColor = new Color(Colors.DarkGray);
+            }
+            else
+            {
+                // it's red
+                _redMat.AlbedoColor = new Color(1f, 0f, 0f);
+                _greenMat.AlbedoColor = new Color(Colors.DarkGray);
+            }
         }
 
         public ImmediateGeometry GetBoundingBox()

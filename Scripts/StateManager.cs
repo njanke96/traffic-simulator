@@ -86,7 +86,6 @@ namespace CSC473.Scripts
         public PathNode LinkNodeU;
 
         private bool _nodesVisible;
-
         public bool NodesVisible
         {
             get => _nodesVisible;
@@ -95,6 +94,14 @@ namespace CSC473.Scripts
                 _nodesVisible = value;
                 EmitSignal(nameof(NodeVisChanged));
             }
+        }
+        
+        // the traffic light channel that is currently green
+        public int CurrentGreenChannel;
+        public float LightTimerTimeout
+        {
+            get => _trafficTimer.WaitTime;
+            set => _trafficTimer.WaitTime = value;
         }
 
         // // signals
@@ -119,6 +126,8 @@ namespace CSC473.Scripts
 
         // //
 
+        private Timer _trafficTimer;
+
         public StateManager()
         {
             // start with a random seed from system random
@@ -126,6 +135,17 @@ namespace CSC473.Scripts
             _rng.Seed = (ulong) new Random().Next() + (ulong) new Random().Next();
         }
 
+        public override void _Ready()
+        {
+            // create the traffic light timer
+            _trafficTimer = new Timer();
+            _trafficTimer.PauseMode = PauseModeEnum.Stop;
+            _trafficTimer.Autostart = true;
+            _trafficTimer.WaitTime = 10f;
+            _trafficTimer.Connect("timeout", this, nameof(TimerTimeout));
+            AddChild(_trafficTimer);
+        }
+        
         /// <summary>
         /// Generate a random integer getween min and max (inclusive).
         /// </summary>
@@ -137,6 +157,13 @@ namespace CSC473.Scripts
             // wrapping rng instead of exposing it as a public member because the object in memory
             // changes as the random seed changes.
             return _rng.RandiRange(min, max);
+        }
+
+        public void TimerTimeout()
+        {
+            // swap green channels
+            CurrentGreenChannel = CurrentGreenChannel == 0 ? 1 : 0;
+            GD.Print($"Green channel: {CurrentGreenChannel}");
         }
 
         private string _RngSeedAsString()

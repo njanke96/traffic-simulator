@@ -35,6 +35,9 @@ namespace CSC473.Scripts.Ui
 
         private PopupMenu _fileMenu;
         private CheckBox _nodesVisible;
+
+        private Label _lightTimerLabel;
+        private Slider _lightTimer;
         
         // toolbar
         private Button _playButton;
@@ -121,6 +124,10 @@ namespace CSC473.Scripts.Ui
 
             _nodesVisible = GetNode<CheckBox>(sidebarPath + "/NodesVisible");
             _nodesVisible.Connect("pressed", this, nameof(_NodeVisibilityChange));
+            
+            _lightTimerLabel = GetNode<Label>(sidebarPath + "/LLightTime");
+            _lightTimer = GetNode<Slider>(sidebarPath + "/LightTime");
+            _lightTimer.Connect("value_changed", this, nameof(_LightTimerChanged));
             
             // path node attribute changes
             _nodeType.Connect("item_selected", this, nameof(_PathNodeAttrChanged));
@@ -378,6 +385,12 @@ namespace CSC473.Scripts.Ui
 
             hintObject.Channel = _lightChannel.Selected;
             hintObject.HintRotation = (int)_hintObjRot.Value;
+        }
+
+        public void _LightTimerChanged(float value)
+        {
+            _lightTimerLabel.Text = $"Traffic light timer: {(int)value}";
+            _stateManager.LightTimerTimeout = value;
         }
 
         public void _FileMenuCallback(int id)
