@@ -50,15 +50,7 @@ namespace CSC473.Scripts
         public string ClassName = "none set";
         
         // speed getter (km/h)
-        public float Speed
-        {
-            get => LinearVelocity.Length() * 3.6f;
-            set
-            {
-                Vector3 normv = LinearVelocity.Normalized();
-                LinearVelocity = normv * value;
-            }
-        }
+        public float Speed => LinearVelocity.Length() * 3.6f;
 
         /// <summary>
         /// The default constructor is intended for debugging, when attaching this script to a VehicleBody

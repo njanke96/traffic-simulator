@@ -197,8 +197,12 @@ namespace CSC473.Scripts.Ui
             if (_stateManager.CurrentSelection is Vehicle vehicle)
             {
                 // a vehicle is selected and needs its speed updated
-                UpdateVehicleClassAndSpeed($"Class: {vehicle.ClassName}", 
-                    $"Speed: {(int) vehicle.Speed} km/h");
+                UpdateVehicleClassAndSpeed($"{vehicle.ClassName}", 
+                    $"{(int) vehicle.Speed} km/h");
+            }
+            else
+            {
+                UpdateVehicleClassAndSpeed(null, null);
             }
         }
 
@@ -374,8 +378,8 @@ namespace CSC473.Scripts.Ui
             else if (newSelection is Vehicle vehicle)
             {
                 // a vehicle was selected
-                UpdateVehicleClassAndSpeed($"Class: {vehicle.ClassName}", 
-                    $"Speed: {(int) vehicle.Speed} km/h");
+                UpdateVehicleClassAndSpeed($"{vehicle.ClassName}", 
+                    $"{(int) vehicle.Speed} km/h");
             }
         }
 

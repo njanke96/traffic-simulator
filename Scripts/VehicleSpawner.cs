@@ -77,7 +77,7 @@ namespace CSC473.Scripts
     
     internal class Van : VehiclePerformanceClass
     {
-        public override string Name() { return "Suspicious Van"; }
+        public override string Name() { return "Van"; }
 
         public override string ModelPath()
         {
@@ -311,7 +311,7 @@ namespace CSC473.Scripts
                 perfClass.StrutLen(),
                 perfClass.Mass(),
                 perfClass.TranslateZ(),
-                perfClass.GetType().Name
+                perfClass.Name()
             );
 
             vehicle.PauseMode = PauseModeEnum.Stop;

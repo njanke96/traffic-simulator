@@ -22,6 +22,7 @@ namespace CSC473.Scripts
             if (_stateManager.CurrentSelection == null)
                 return;
 
+
             if (!(_stateManager.CurrentSelection is Vehicle selectedVehicle)) 
                 return;
             

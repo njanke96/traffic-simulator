@@ -12,6 +12,7 @@
         public class AIVehicleController : Node
         {
             private Vehicle _vehicle;
+            private bool stomp;
 
             public override void _Ready()
             {
@@ -25,7 +26,23 @@
                     return;
             
                 // placeholder functionality: just drive forward forever
-                _vehicle.EngineForce = _vehicle.EnginePerf * 1.0f;
+                if (_vehicle.Speed >= 30f && stomp == false)
+                {
+                    stomp = true;
+                }
+
+                if (stomp)
+                {
+                    _vehicle.EngineForce = 0f;
+                    _vehicle.Brake = 1f;
+                    
+                    if (_vehicle.Speed < 1) _vehicle.QueueFree();
+                }
+                else
+                {
+                    _vehicle.EngineForce = _vehicle.EnginePerf * 1.0f;
+                    _vehicle.Brake = 0f;
+                }
             }
         }
     }

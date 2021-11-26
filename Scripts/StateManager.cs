@@ -147,7 +147,23 @@ namespace CSC473.Scripts
             _trafficTimer.Connect("timeout", this, nameof(TimerTimeout));
             AddChild(_trafficTimer);
         }
-        
+
+        public override void _Process(float delta)
+        {
+            // selection validity checks
+            if (!IsInstanceValid((Godot.Object) CurrentSelection))
+            {
+                CurrentSelection = null;
+                return;
+            }
+
+            Node selectedNode = (Node) CurrentSelection;
+            if (selectedNode.IsQueuedForDeletion())
+            {
+                CurrentSelection = null;
+            }
+        }
+
         /// <summary>
         /// Generate a random integer getween min and max (inclusive).
         /// </summary>
