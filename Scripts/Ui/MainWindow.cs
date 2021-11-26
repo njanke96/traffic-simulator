@@ -105,7 +105,6 @@ namespace CSC473.Scripts.Ui
             _maxSpawnTimer = GetNode<LineEdit>(sidebarPath + "/MaxSpawnTimerContainer/MaxSpawnTimer");
 
             _objType = GetNode<OptionButton>(sidebarPath + "/ObjTypeContainer/ObjType");
-            _objType.AddItem("Stop Sign", (int) HintObjectType.StopSign);
             _objType.AddItem("Traffic Light", (int) HintObjectType.TrafficLight);
             
             _lightChannel = GetNode<OptionButton>(sidebarPath + "/LightChannelContainer/LightChannel");
@@ -524,7 +523,7 @@ namespace CSC473.Scripts.Ui
             if (!enabled)
             {
                 // restore default values
-                _objType.Selected = (int) HintObjectType.StopSign;
+                _objType.Selected = (int) HintObjectType.TrafficLight;
                 _lightChannel.Selected = 0;
                 _hintObjRot.Value = 0.0;
                 _HintObjRotChanged(0.0f);

@@ -80,8 +80,11 @@ namespace CSC473.Scripts
                     return;
                 }
                 
-                // add the node
-                GD.Print("will add hint object");
+                // add the hint object
+                HintObject hintObject = _mainWindow.HintObjectFromSettings();
+                hintObject.Transform = new Transform(Basis.Identity, clickPos);
+                _hintObjects.Add(hintObject);
+                AddChild(hintObject);
             }
         }
 
