@@ -108,8 +108,8 @@ namespace CSC473.Scripts.Ui
             _objType.AddItem("Traffic Light", (int) HintObjectType.TrafficLight);
             
             _lightChannel = GetNode<OptionButton>(sidebarPath + "/LightChannelContainer/LightChannel");
-            _lightChannel.AddItem("Channel 1", 0);
-            _lightChannel.AddItem("Channel 2", 1);
+            _lightChannel.AddItem("Channel 0", 0);
+            _lightChannel.AddItem("Channel 1", 1);
 
             _hintObjRot = GetNode<Slider>(sidebarPath + "/ObjRotation");
             _hintObjRotLabel = GetNode<Label>(sidebarPath + "/LObjRotation");
@@ -127,6 +127,10 @@ namespace CSC473.Scripts.Ui
             _speedLimit.Connect("text_entered", this, nameof(_PathNodeAttrChanged));
             _minSpawnTimer.Connect("text_entered", this, nameof(_PathNodeAttrChanged));
             _maxSpawnTimer.Connect("text_entered", this, nameof(_PathNodeAttrChanged));
+            
+            // hint object attribute changes
+            _lightChannel.Connect("item_selected", this, nameof(_HintObjectAttrChanged));
+            _hintObjRot.Connect("value_changed", this, nameof(_HintObjectAttrChanged));
 
             // // preload 3d viewport scene (could use ResourceInteractiveLoader in future)
             Node root3d = ResourceLoader.Load<PackedScene>("res://3DView.tscn").Instance();
@@ -333,6 +337,15 @@ namespace CSC473.Scripts.Ui
                 _minSpawnTimer.Text = pathNode.SpawnMin.ToString(CultureInfo.InvariantCulture);
                 _maxSpawnTimer.Text = pathNode.SpawnMax.ToString(CultureInfo.InvariantCulture);
             }
+            else if (newSelection is HintObject hintObject)
+            {
+                // a hint object was selected
+                SetHintObjControlsEnabled(true);
+                
+                // set control values
+                _lightChannel.Selected = hintObject.Channel;
+                _hintObjRot.Value = hintObject.HintRotation;
+            }
         }
 
         public void _PathNodeAttrChanged(params object[] paramz)
@@ -353,6 +366,18 @@ namespace CSC473.Scripts.Ui
 
             // thanks fella
             newNode.QueueFree();
+        }
+
+        public void _HintObjectAttrChanged(params object[] paramz)
+        {
+            if (_stateManager.CurrentTool != ToolType.Select || _stateManager.CurrentSelection == null)
+                return;
+            
+            if (!(_stateManager.CurrentSelection is HintObject hintObject))
+                return;
+
+            hintObject.Channel = _lightChannel.Selected;
+            hintObject.HintRotation = (int)_hintObjRot.Value;
         }
 
         public void _FileMenuCallback(int id)

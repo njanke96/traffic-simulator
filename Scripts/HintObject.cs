@@ -25,6 +25,9 @@ namespace CSC473.Scripts
         private SpatialMaterial _redMat, _yellowMat, _greenMat;
 
         private int _hintRotation;
+        
+        private PathLayout _layout;
+        
         public int HintRotation
         {
             get => _hintRotation;
@@ -45,6 +48,8 @@ namespace CSC473.Scripts
         public override void _Ready()
         {
             PauseMode = PauseModeEnum.Process;
+
+            _layout = GetParent<PathLayout>();
             
             // only traffic lights supported at this time
             if (HintType != HintObjectType.TrafficLight)
@@ -66,6 +71,10 @@ namespace CSC473.Scripts
             root.GetNodeOrNull<MeshInstance>("red").MaterialOverride = _redMat;
             root.GetNodeOrNull<MeshInstance>("yellow").MaterialOverride = _yellowMat;
             root.GetNodeOrNull<MeshInstance>("green").MaterialOverride = _greenMat;
+            
+            // click area signal forwarding
+            root.GetNodeOrNull<Area>("ClickArea").Connect("input_event", _layout,
+                nameof(PathLayout._HintObjectClicked), new Godot.Collections.Array(this));
             
             AddChild(root);
         }

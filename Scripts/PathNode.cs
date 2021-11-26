@@ -104,7 +104,7 @@ namespace CSC473.Scripts
             InitChild();
         }
 
-        public void InitChild()
+        private void InitChild()
         {
             // instance the child scene
             Spatial visNodeRoot = ResourceLoader.Load<PackedScene>(ChildScene).Instance<Spatial>();

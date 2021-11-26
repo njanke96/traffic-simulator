@@ -74,12 +74,6 @@ namespace CSC473.Scripts
             }
             else if (_stateManager.CurrentTool == ToolType.AddHintObject)
             {
-                if (!GetTree().Paused)
-                {
-                    _stateManager.EmitSignal(nameof(StateManager.StatusLabelChangeRequest), PausePrompt);
-                    return;
-                }
-                
                 // add the hint object
                 HintObject hintObject = _mainWindow.HintObjectFromSettings();
                 hintObject.Transform = new Transform(Basis.Identity, clickPos);
@@ -177,6 +171,30 @@ namespace CSC473.Scripts
                     _stateManager.LinkNodeU = null;
                     _edgeVisual.Rebuild(_edges, _pathNodes);
                 }
+            }
+        }
+
+        public void _HintObjectClicked(Node camera, InputEvent @event, Vector3 position, Vector3 normal, int shapeIdx,
+            HintObject source)
+        {
+            if (!(@event is InputEventMouseButton evBtn))
+                return;
+            
+            if (evBtn.ButtonIndex != (int) ButtonList.Left || !evBtn.Pressed)
+                return;
+
+            if (_stateManager.CurrentTool == ToolType.Select)
+            {
+                _stateManager.EmitSignal(nameof(StateManager.StatusLabelChangeRequest), 
+                    "Selected hint object: " + source.Name);
+
+                _stateManager.CurrentSelection = source;
+            }
+            else if (_stateManager.CurrentTool == ToolType.DeleteNode)
+            {
+                // remove from the local list and free from the tree
+                _hintObjects.Remove(source);
+                source.QueueFree();
             }
         }
 
