@@ -419,6 +419,11 @@ namespace CSC473.Scripts.Ui
                     AddChild(tmr);
                     break;
                 }
+                case FileMenuItem.Quit:
+                {
+                    GetTree().Quit(0);
+                    break;
+                }
             }
         }
 
