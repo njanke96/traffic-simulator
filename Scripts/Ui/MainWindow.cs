@@ -370,6 +370,7 @@ namespace CSC473.Scripts.Ui
             selectedNode.SpeedLimit = newNode.SpeedLimit;
             selectedNode.SpawnMin = newNode.SpawnMin;
             selectedNode.SpawnMax = newNode.SpawnMax;
+            _stateManager.ShortestPathNeedsRebuild = true;
 
             // thanks fella
             newNode.QueueFree();

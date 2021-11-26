@@ -104,6 +104,8 @@ namespace CSC473.Scripts
             set => _trafficTimer.WaitTime = value;
         }
 
+        public bool ShortestPathNeedsRebuild;
+
         // // signals
 
         [Signal]
@@ -163,7 +165,6 @@ namespace CSC473.Scripts
         {
             // swap green channels
             CurrentGreenChannel = CurrentGreenChannel == 0 ? 1 : 0;
-            GD.Print($"Green channel: {CurrentGreenChannel}");
         }
 
         private string _RngSeedAsString()
