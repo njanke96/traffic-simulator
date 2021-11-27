@@ -44,6 +44,24 @@ namespace CSC473.Scripts
         }
 
         /// <summary>
+        /// Get the first node of the linked list representing the shortest path from start to finish.
+        /// </summary>
+        /// <param name="start">Starting PathNode</param>
+        /// <param name="finish">Ending PathNode</param>
+        /// <returns>A LinkedListNode encapsulating the first PathNode or null if none is found.</returns>
+        public LinkedListNode<PathNode> GetShortestPathHead(PathNode start, PathNode finish)
+        {
+            try
+            {
+                return _shortestPaths[new Tuple<PathNode, PathNode>(start, finish)].First;
+            }
+            catch (KeyNotFoundException)
+            {
+                return null;
+            }
+        }
+
+        /// <summary>
         /// (re)Build the shortest path lists in the shortest paths dictionary
         /// </summary>
         private void RebuildShortestPathLists()
@@ -126,6 +144,9 @@ namespace CSC473.Scripts
                     
                     // finally, add the path to the dictionary of shortest paths
                     _shortestPaths[key] = path;
+                    
+                    // force simulation reset
+                    _stateManager.ResetVehicles();
 
                     /*
                     string strPath = "[";
@@ -148,6 +169,8 @@ namespace CSC473.Scripts
                 nameof(_GroundPlaneClicked));
             _stateManager.Connect(nameof(StateManager.NodeVisChanged), this, 
                 nameof(_NodeVisibilityChanged));
+            _stateManager.Connect(nameof(StateManager.ResetVehicleSimulation), this,
+                nameof(_ResetVehicles));
             
             // find main window
             _mainWindow = (MainWindow) FindParent("MainWindow");
@@ -333,6 +356,23 @@ namespace CSC473.Scripts
         public void _NodeVisibilityChanged()
         {
             Visible = _stateManager.NodesVisible;
+        }
+
+        public void _ResetVehicles()
+        {
+            // remove all vehicles and with them their AI
+            for (int i = VehiclesRoot.GetChildCount() - 1; i >= 0; i--)
+            {
+                VehiclesRoot.GetChild(i).QueueFree();
+            }
+            
+            // reset all spawners
+            foreach (PathNode pathNode in _pathNodes)
+            {
+                pathNode.RemoveVehicleSpawner();
+                if (pathNode.NodeType == PathNodeType.Start)
+                    pathNode.CreateVehicleSpawner();
+            }
         }
 
         private double DistBetweenNodes(PathNode u, PathNode v)

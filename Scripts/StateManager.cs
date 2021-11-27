@@ -126,6 +126,9 @@ namespace CSC473.Scripts
         [Signal]
         public delegate void NodeVisChanged();
 
+        [Signal]
+        public delegate void ResetVehicleSimulation();
+
         // //
 
         private Timer _trafficTimer;
@@ -181,6 +184,11 @@ namespace CSC473.Scripts
         {
             // swap green channels
             CurrentGreenChannel = CurrentGreenChannel == 0 ? 1 : 0;
+        }
+
+        public void ResetVehicles()
+        {
+            EmitSignal(nameof(ResetVehicleSimulation));
         }
 
         private string _RngSeedAsString()

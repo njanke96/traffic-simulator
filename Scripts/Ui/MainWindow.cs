@@ -45,6 +45,7 @@ namespace CSC473.Scripts.Ui
         // toolbar
         private Button _playButton;
         private Button _pauseButton;
+        private Button _resetButton;
         private Button _selectButton;
         private Button _addNodeButton;
         private Button _addHintObjButton;
@@ -81,6 +82,9 @@ namespace CSC473.Scripts.Ui
             
             _pauseButton = GetNode<Button>("OuterMargin/MainContainer/ToolBar/Pause");
             _pauseButton.Connect("button_down", this, nameof(_PauseClicked));
+
+            _resetButton = GetNode<Button>("OuterMargin/MainContainer/ToolBar/Restart");
+            _resetButton.Connect("button_down", this, nameof(_ResetClicked));
             
             _selectButton = GetNode<Button>("OuterMargin/MainContainer/ToolBar/Select");
             _addNodeButton = GetNode<Button>("OuterMargin/MainContainer/ToolBar/AddNode");
@@ -220,6 +224,11 @@ namespace CSC473.Scripts.Ui
             GetTree().Paused = true;
             _playButton.Disabled = false;
             _pauseButton.Disabled = true;
+        }
+
+        public void _ResetClicked()
+        {
+            _stateManager.ResetVehicles();
         }
 
         public void _ToolButtonClicked(ToolType tool)
