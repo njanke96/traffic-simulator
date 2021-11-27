@@ -29,6 +29,7 @@ namespace CSC473.Scripts.Ui
         private LineEdit _speedLimit;
         private LineEdit _minSpawnTimer;
         private LineEdit _maxSpawnTimer;
+        private Label _nodeEditHint;
 
         private Label _vehicleClass;
         private Label _vehicleSpeed;
@@ -116,6 +117,7 @@ namespace CSC473.Scripts.Ui
             _speedLimit = GetNode<LineEdit>(sidebarPath + "/SpeedLimitContainer/SpeedLimit");
             _minSpawnTimer = GetNode<LineEdit>(sidebarPath + "/MinSpawnTimerContainer/MinSpawnTimer");
             _maxSpawnTimer = GetNode<LineEdit>(sidebarPath + "/MaxSpawnTimerContainer/MaxSpawnTimer");
+            _nodeEditHint = GetNode<Label>(sidebarPath + "/NodeUpdateHint");
             
             _vehicleClass = GetNode<Label>(sidebarPath + "/LVehClass");
             _vehicleSpeed = GetNode<Label>(sidebarPath + "/LVehSpeed");
@@ -717,8 +719,20 @@ namespace CSC473.Scripts.Ui
                 _speedLimit.Text = PathNode.DefaultSpeedLimit.ToString();
                 _minSpawnTimer.Text = PathNode.DefaultSpawnMin.ToString(CultureInfo.InvariantCulture);
                 _maxSpawnTimer.Text = PathNode.DefaultSpawnMax.ToString(CultureInfo.InvariantCulture);
+                _nodeEditHint.Text = "";
             }
-            
+            else
+            {
+                if (_stateManager.CurrentTool == ToolType.Select)
+                {
+                    _nodeEditHint.Text = "Enter to apply.";
+                }
+                else
+                {
+                    _nodeEditHint.Text = "";
+                }
+            }
+
             _nodeType.Disabled = !enabled;
             _speedLimit.Editable = enabled;
             _minSpawnTimer.Editable = enabled;
