@@ -355,19 +355,10 @@ namespace CSC473.Scripts
             Vector3 startDir = new Vector3(0, 0, 1f);
             for (int i = -60; i <= 60; i += 1)
             {
-                vehicle.AddChild(RayFromUnitVector(new Vector3(startDir.Rotated(Vector3.Up, 
-                    Mathf.Deg2Rad(i)))));
+                RayCast ray = RayFromUnitVector(new Vector3(startDir.Rotated(Vector3.Up, Mathf.Deg2Rad(i))));
+                SetRayAngle(ray, Mathf.Deg2Rad(i));
+                vehicle.AddChild(ray);
             }
-            
-            /*
-            vehicle.AddChild(RayFromUnitVector(new Vector3(0.866f, 0, 0.5f)));
-            vehicle.AddChild(RayFromUnitVector(new Vector3(0.643f, 0, 0.766f)));
-            vehicle.AddChild(RayFromUnitVector(new Vector3(0.342f, 0, 0.94f)));
-            vehicle.AddChild(RayFromUnitVector(new Vector3(0f, 0, 1f)));
-            vehicle.AddChild(RayFromUnitVector(new Vector3(-0.342f, 0, 0.94f)));
-            vehicle.AddChild(RayFromUnitVector(new Vector3(-0.643f, 0, 0.766f)));
-            vehicle.AddChild(RayFromUnitVector(new Vector3(-0.866f, 0, 0.5f)));
-            */
 
             // vehicle controller
             AIVehicleController controller = new AIVehicleController(firstNode);
@@ -398,7 +389,7 @@ namespace CSC473.Scripts
             rc.CastTo = unit;
             rc.Translate(new Vector3(0f, 1f, 0.5f));
             rc.CollideWithAreas = true;
-            
+
             // collide only with other vehicles and hint objects
             rc.SetCollisionMaskBit(1, false);
             rc.SetCollisionMaskBit(2, true);
@@ -406,6 +397,26 @@ namespace CSC473.Scripts
             rc.Enabled = true;
             
             return rc;
+        }
+
+        /// <summary>
+        /// Set a ray's stored angle in radians
+        /// </summary>
+        /// <param name="ray"></param>
+        /// <param name="angle"></param>
+        public static void SetRayAngle(RayCast ray, float angle)
+        {
+            ray.SetMeta("angle", angle);
+        }
+
+        /// <summary>
+        /// Get a ray's stored angle in radians.
+        /// </summary>
+        /// <param name="ray"></param>
+        /// <returns></returns>
+        public static float GetRayAngle(RayCast ray)
+        {
+            return (float) ray.GetMeta("angle");
         }
     }
 }

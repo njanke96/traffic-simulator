@@ -205,6 +205,12 @@ namespace CSC473.Scripts.Ui
         {
             if (_stateManager.CurrentSelection is Vehicle vehicle)
             {
+                if (!IsInstanceValid(vehicle))
+                {
+                    _stateManager.CurrentSelection = null;
+                    return;
+                }
+                
                 // a vehicle is selected and needs its speed updated
                 UpdateVehicleClassAndSpeed($"{vehicle.ClassName}", 
                     $"{(int) vehicle.Speed} km/h");

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace CSC473.Scripts
 {
@@ -6,6 +7,30 @@ namespace CSC473.Scripts
 
     namespace CSC473.Scripts
     {
+        // attributes of a tracked collision event
+        internal class RayCollisionEvent
+        {
+            // distance from agent to target
+            public float Distance;
+            
+            // angle from agent's forward vector to target
+            public float Angle;
+            
+            // time this object has been seen for
+            public float Time;
+            
+            // has the time been updated this frame?
+            public bool TimeUpdatedThisFrame;
+
+            public RayCollisionEvent(float distance, float angle, float time)
+            {
+                Distance = distance;
+                Angle = angle;
+                Time = time;
+                TimeUpdatedThisFrame = false;
+            }
+        }
+        
         /// <summary>
         /// AI-controlled vehicle controller.
         /// Parent node must be a Scripts.Vehicle.
@@ -27,6 +52,9 @@ namespace CSC473.Scripts
             // vision raycast lengths (m)
             private const int RayCastLength = 50;
             
+            // time required for AI to "see" an object in milliseconds
+            private const int ReactionTime = 250;
+            
             // //
 
             // vehicle we are controlling
@@ -34,6 +62,9 @@ namespace CSC473.Scripts
             
             // unordered list of RayCast children of _vehicle
             private HashSet<RayCast> _rayCasts;
+
+            // maps objects with collision events
+            private Dictionary<Object, RayCollisionEvent> _collidingObjects;
 
             // the next node to travel to
             private LinkedListNode<PathNode> _nextNode;
@@ -47,6 +78,7 @@ namespace CSC473.Scripts
             public AIVehicleController(LinkedListNode<PathNode> firstNode)
             {
                 _nextNode = firstNode;
+                _collidingObjects = new Dictionary<Object, RayCollisionEvent>();
             }
 
             public override void _Ready()
@@ -99,6 +131,79 @@ namespace CSC473.Scripts
                     }
                     
                     _nextNodeLast = _nextNode.Value.NodeType == PathNodeType.End;
+                }
+                
+                // // ray collisions
+                
+                // reset RayCollisionEvent flags
+                foreach (var kv in _collidingObjects)
+                {
+                    kv.Value.TimeUpdatedThisFrame = false;
+                }
+
+                // clear collisions which are no longer valid
+                HashSet<Object> keys = _collidingObjects.Keys.ToHashSet();
+                foreach (Object key in keys.Where(key => _rayCasts.Count(cast => cast.GetCollider() == key) < 1))
+                {
+                    // no raycasts claim to be colliding with this object anymore
+                    _collidingObjects.Remove(key);
+                }
+
+                // detect new collisions and update existing ones
+                foreach (RayCast rayCast in _rayCasts)
+                {
+                    Object collider = rayCast.GetCollider();
+                    
+                    // no collider
+                    if (collider == null)
+                        continue;
+                    
+                    // not sure if this is even possible
+                    if (!(collider is Spatial spCollider))
+                        continue;
+                    
+                    float distance = (spCollider.Transform.origin - _vehicle.Transform.origin).Length();
+                    
+                    // not a new collision?
+                    if (_collidingObjects.ContainsKey(collider))
+                    {
+                        // update angle and distance (see comment on angles below)
+                        RayCollisionEvent colliderEv = _collidingObjects[collider];
+                        colliderEv.Angle = VehicleSpawner.GetRayAngle(rayCast);
+                        colliderEv.Distance = distance;
+                        
+                        // update time, check it has not already been updated by another iteration of this loop
+                        if (!colliderEv.TimeUpdatedThisFrame)
+                        {
+                            colliderEv.Time += delta * 1000;
+                            colliderEv.TimeUpdatedThisFrame = true;
+                        }
+
+                        continue;
+                    }
+
+                    /*
+                     * Note on angles:
+                     * Here the angle is assumed to be the LAST colliding ray's stored angle. This is faster
+                     * than calculating the angle by vectors but can lead to large amounts of error
+                     * if the object seen by the vehicle is very large.
+                     */
+                    _collidingObjects.Add(collider, 
+                        new RayCollisionEvent(distance, VehicleSpawner.GetRayAngle(rayCast), 0));
+                }
+                
+                // process ray collisions
+                foreach (var kv in _collidingObjects)
+                {
+                    Object collider = kv.Key;
+                    RayCollisionEvent collisionEv = kv.Value;
+
+                    if (collider is Vehicle targetVehicle)
+                    {
+                        GD.Print($"Vehicle {_vehicle.Name}: I can see vehicle {targetVehicle.Name}!");
+                        GD.Print($"Distance: {collisionEv.Distance}, Angle: {Mathf.Rad2Deg(collisionEv.Angle)}, Time: {collisionEv.Time}");
+                        GD.Print("---");
+                    }
                 }
                 
                 // steer towards next node in path
