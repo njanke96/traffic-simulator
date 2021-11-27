@@ -19,7 +19,7 @@ namespace CSC473.Scripts
         // path to collision shape scene
         public abstract string CollisionShapePath();
         
-        // engine performance number (50 for sedan)
+        // engine performance number
         public abstract float EnginePerf();
         
         // steering ratio (0.5 usually works)
@@ -37,10 +37,10 @@ namespace CSC473.Scripts
         // total length of struts (m)
         public abstract float StrutLen();
         
-        // mass (relative, sedan is 100 units of mass)
+        // mass (not sure about the units on this one)
         public abstract float Mass();
         
-        // z rotation
+        // initial z rotation to make it face forward
         public abstract float TranslateZ();
     }
 
@@ -58,7 +58,7 @@ namespace CSC473.Scripts
             return "res://Assets/Vehicles/SedanCollisionShape.tscn";
         }
 
-        public override float EnginePerf() { return 50f; }
+        public override float EnginePerf() { return 140f; }
         
         public override float SteerRatio() { return 0.5f; }
 
@@ -70,7 +70,7 @@ namespace CSC473.Scripts
         
         public override float StrutLen() { return 0.1f; }
         
-        public override float Mass() { return 100f; }
+        public override float Mass() { return 120f; }
 
         public override float TranslateZ() { return 0f; }
     }
@@ -89,7 +89,7 @@ namespace CSC473.Scripts
             return "res://Assets/Vehicles/VanCollisionShape.scn";
         }
 
-        public override float EnginePerf() { return 65f; }
+        public override float EnginePerf() { return 180f; }
         
         public override float SteerRatio() { return 0.5f; }
 
@@ -120,7 +120,7 @@ namespace CSC473.Scripts
             return "res://Assets/Vehicles/DeliveryCollisionShape.scn";
         }
 
-        public override float EnginePerf() { return 120f; }
+        public override float EnginePerf() { return 260f; }
         
         public override float SteerRatio() { return 0.5f; }
 
@@ -151,7 +151,7 @@ namespace CSC473.Scripts
             return "res://Assets/Vehicles/SportsCollisionShape.tscn";
         }
 
-        public override float EnginePerf() { return 90f; }
+        public override float EnginePerf() { return 240f; }
         
         public override float SteerRatio() { return 0.5f; }
 
@@ -182,7 +182,7 @@ namespace CSC473.Scripts
             return "res://Assets/Vehicles/SuvCollisionShape.tscn";
         }
 
-        public override float EnginePerf() { return 70f; }
+        public override float EnginePerf() { return 240f; }
         
         public override float SteerRatio() { return 0.5f; }
 
@@ -194,7 +194,7 @@ namespace CSC473.Scripts
         
         public override float StrutLen() { return 0.1f; }
         
-        public override float Mass() { return 170f; }
+        public override float Mass() { return 150f; }
         
         public override float TranslateZ() { return 0.18f; }
     }
@@ -249,6 +249,18 @@ namespace CSC473.Scripts
                 (new SportsCar(), 0.2f),
                 (new SportsUtility(), 0.3f)
             };
+            
+            // for testing
+            /*
+            _vehiclePool = new List<(VehiclePerformanceClass, float)>
+            {
+                (new Sedan(), 0.02f),
+                (new Van(), 0.02f),
+                (new Delivery(), 0.02f),
+                (new SportsCar(), 0.99f),
+                (new SportsUtility(), 0.04f)
+            };
+            */
 
             // color pool (equal chance)
             _colorPool = new List<Color>

@@ -8,10 +8,13 @@ namespace CSC473.Scripts
     /// </summary>
     public class Vehicle : VehicleBody, ISelectable
     {
+        // constants
+        public static float CommonBrakePerformance = 4f;
+        
         // engine performance and steering ratio for controller
         public float EnginePerf;
         public float SteerRatio;
-        
+
         // body color
         private Color _color;
 
@@ -26,7 +29,7 @@ namespace CSC473.Scripts
                 _body.SetSurfaceMaterial(_colorMaterialIndex, material);
             }
         }
-        
+
         private StateManager _stateManager;
 
         // rigidbody properties
@@ -71,19 +74,8 @@ namespace CSC473.Scripts
         }
 
         /// <summary>
-        /// Initialize the vehicle.
+        /// Initialize the vehicle. See VehiclePerformanceClass for parameter descriptions.
         /// </summary>
-        /// <param name="modelPath">Path to the model. Must be one of kenney's low poly cars in glb format.</param>
-        /// <param name="collisionShapePath">Path to collision shape scene.</param>
-        /// <param name="enginePerf"></param>
-        /// <param name="steerRatio"></param>
-        /// <param name="colorMaterialIndex">Material slot index for the main color material.</param>
-        /// <param name="wheelRadius">Radius of the wheel.</param>
-        /// <param name="suspTravel">Total suspension travel</param>
-        /// <param name="strutLen">Total strut length.</param>
-        /// <param name="mass">The mass. For reference, a small sedan seems to be 100 units of mass.</param>
-        /// <param name="translateZ">How much to translate the vehicle body on the z axis</param>
-        /// <param name="className">Human readible name of vehicle class</param>
         public Vehicle(string modelPath, string collisionShapePath, float enginePerf, float steerRatio, 
             int colorMaterialIndex, float wheelRadius, float suspTravel, float strutLen, 
             float mass, float translateZ, string className)
@@ -217,6 +209,44 @@ namespace CSC473.Scripts
             
             // i have been selected
             _stateManager.CurrentSelection = this;
+        }
+
+        public override void _PhysicsProcess(float delta)
+        {
+            if (Transform.origin.y < -100)
+            {
+                // I have fallen off the earth
+                QueueFree();
+            }
+        }
+
+        // // controller-vehicle interfacing functions
+
+        /// <summary>
+        /// Set the acceleration value, -1 is full reverse, 1 is full forward
+        /// </summary>
+        /// <param name="accel"></param>
+        public void SetAccelRatio(float accel)
+        {
+            EngineForce = EnginePerf * accel;
+        }
+
+        /// <summary>
+        /// 0.0 to 1.0 braking force
+        /// </summary>
+        /// <param name="braking"></param>
+        public void SetBrakeRatio(float braking)
+        {
+            Brake = CommonBrakePerformance * braking;
+        }
+
+        /// <summary>
+        /// 1.0 is full left lock, -1.0 is full right lock
+        /// </summary>
+        /// <param name="steering"></param>
+        public void SetSteerValue(float steering)
+        {
+            Steering = SteerRatio * steering;
         }
 
         public ImmediateGeometry GetBoundingBox()
