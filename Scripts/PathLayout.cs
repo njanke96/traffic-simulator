@@ -62,6 +62,30 @@ namespace CSC473.Scripts
         }
 
         /// <summary>
+        /// Given a starting node, pick a random end node that there is a valid path to.
+        /// </summary>
+        /// <param name="start">The start node</param>
+        /// <returns>The selected end node, null if there are none.</returns>
+        public PathNode PickRandomEndNode(PathNode start)
+        {
+            List<PathNode> candidates = new List<PathNode>();
+            foreach (var kv in _shortestPaths.Where(pair => pair.Key.Item1 == start))
+            {
+                candidates.Add(kv.Key.Item2);
+            }
+
+            // none found?
+            if (candidates.Count < 1)
+                return null;
+
+            // one found?
+            if (candidates.Count == 1)
+                return candidates[0];
+            
+            return candidates[_stateManager.RandInt(0, candidates.Count - 1)];
+        }
+
+        /// <summary>
         /// (re)Build the shortest path lists in the shortest paths dictionary
         /// </summary>
         private void RebuildShortestPathLists()

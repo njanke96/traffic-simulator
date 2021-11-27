@@ -3,7 +3,7 @@
 namespace CSC473.Scripts
 {
     /// <summary>
-    /// Human controller for early testing. It shouldn't be used anymore.
+    /// Human controller that was used for early testing. It shouldn't be used anymore.
     /// </summary>
     public class HumanVehicleController : Node
     {

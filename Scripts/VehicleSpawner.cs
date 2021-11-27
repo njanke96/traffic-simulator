@@ -58,7 +58,7 @@ namespace CSC473.Scripts
             return "res://Assets/Vehicles/SedanCollisionShape.tscn";
         }
 
-        public override float EnginePerf() { return 140f; }
+        public override float EnginePerf() { return 150f; }
         
         public override float SteerRatio() { return 0.5f; }
 
@@ -213,6 +213,7 @@ namespace CSC473.Scripts
         
         // the node to add spawned vehicles as children to
         private readonly Node _vehiclesRoot;
+        
         public float SpawnMin;
         public float SpawnMax;
 
@@ -327,20 +328,42 @@ namespace CSC473.Scripts
             );
 
             vehicle.PauseMode = PauseModeEnum.Stop;
+
+            PathNode parent = GetParent<PathNode>();
             
             // transform vehicle xz to origin of pathnode
-            Vector3 parentOrigin = GetParent<Spatial>().Transform.origin;
+            Vector3 parentOrigin = parent.Transform.origin;
             vehicle.Translate(new Vector3(parentOrigin.x, 0, parentOrigin.z));
+            
+            // determine travel path
+            PathLayout layout = parent.GetParent<PathLayout>();
+            PathNode end = layout.PickRandomEndNode(parent);
+
+            if (end == null)
+            {
+                GD.PushWarning($"Path node {parent.Name} can't spawn a vehicle because there is no path for it to take!");
+                vehicle.QueueFree();
+                NextSpawn();
+                return;
+            }
+            
+            // firstnode is actually the second node of the linked list, the first node of the linked list is where
+            // this vehicle spawned
+            LinkedListNode<PathNode> firstNode = layout.GetShortestPathHead(parent, end).Next;
 
             // vehicle controller
-            AIVehicleController controller = new AIVehicleController();
+            AIVehicleController controller = new AIVehicleController(firstNode);
             
             vehicle.AddChild(controller);
             _vehiclesRoot.AddChild(vehicle);
             
             // set color
             vehicle.BodyColor = color;
-            
+            NextSpawn();
+        }
+
+        private void NextSpawn()
+        {
             // next spawn
             int spawnTimeoutMillis = _stateManager.RandInt((int) SpawnMin * 1000, (int) SpawnMax * 1000);
             Start(spawnTimeoutMillis / 1000f);

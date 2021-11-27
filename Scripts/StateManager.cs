@@ -138,6 +138,8 @@ namespace CSC473.Scripts
             // start with a random seed from system random
             _rng = new RandomNumberGenerator();
             _rng.Seed = (ulong) new Random().Next() + (ulong) new Random().Next();
+            
+            // TODO: re-instantiate RNG on reset
         }
 
         public override void _Ready()
