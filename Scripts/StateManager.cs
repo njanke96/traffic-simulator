@@ -106,6 +106,8 @@ namespace CSC473.Scripts
 
         public bool ShortestPathNeedsRebuild;
 
+        public string LastSavePath = null;
+
         // // signals
 
         [Signal]

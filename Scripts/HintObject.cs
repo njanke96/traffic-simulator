@@ -1,4 +1,7 @@
-﻿using CSC473.Lib;
+﻿using System;
+using System.Runtime.Serialization;
+using System.Security.Permissions;
+using CSC473.Lib;
 using Godot;
 
 namespace CSC473.Scripts
@@ -16,7 +19,8 @@ namespace CSC473.Scripts
     /// Hint objects are spatial objects that influence AI in some way.
     /// Hint objects are not rigid bodies, ie cars can drive through them.
     /// </summary>
-    public class HintObject : BaseLayoutObject, ISelectable
+    [Serializable]
+    public class HintObject : BaseLayoutObject, ISelectable, ISerializable
     {
         public HintObjectType HintType;
         
@@ -139,6 +143,29 @@ namespace CSC473.Scripts
             ig.End();
             
             return ig;
+        }
+        
+        // // serialization
+
+        protected HintObject(SerializationInfo info, StreamingContext context)
+        {
+            HintType = (HintObjectType) info.GetInt32(nameof(HintType));
+            Channel = info.GetInt32(nameof(Channel));
+            HintRotation = info.GetInt32(nameof(HintRotation));
+            
+            // origin
+            Transform = Transform.Translated((Vector3) info.GetValue("origin", typeof(Vector3)));
+        }
+
+        [SecurityPermission(SecurityAction.Demand, SerializationFormatter = true)]
+        public void GetObjectData(SerializationInfo info, StreamingContext context)
+        {
+            info.AddValue(nameof(HintType), (int)HintType);
+            info.AddValue(nameof(Channel), Channel);
+            info.AddValue(nameof(HintRotation), HintRotation);
+            
+            // origin
+            info.AddValue("origin", Transform.origin);
         }
     }
 }

@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Runtime.Serialization;
+using System.Security.Permissions;
 using CSC473.Lib;
 using Godot;
 
@@ -14,7 +16,8 @@ namespace CSC473.Scripts
         End = 2
     }
     
-    public class PathNode : BaseLayoutObject, ISelectable
+    [Serializable]
+    public class PathNode : BaseLayoutObject, ISelectable, ISerializable
     {
         public const int DefaultSpeedLimit = 30;
         public const float DefaultSpawnMin = 2f;
@@ -167,6 +170,33 @@ namespace CSC473.Scripts
                 default:
                     throw new ArgumentOutOfRangeException();
             }
+        }
+        
+        // // serialization
+
+        protected PathNode(SerializationInfo info, StreamingContext context)
+        {
+            _nodeType = (PathNodeType) info.GetInt32(nameof(_nodeType));
+            SpeedLimit = info.GetInt32(nameof(SpeedLimit));
+            SpawnMax = info.GetInt32(nameof(SpawnMax));
+            SpawnMin = info.GetInt32(nameof(SpawnMin));
+            
+            // origin
+            Transform = Transform.Translated((Vector3) info.GetValue("origin", typeof(Vector3)));
+            
+            SetChildSceneFromType();
+        }
+
+        [SecurityPermission(SecurityAction.Demand, SerializationFormatter = true)]
+        public void GetObjectData(SerializationInfo info, StreamingContext context)
+        {
+            info.AddValue(nameof(_nodeType), (int)_nodeType);
+            info.AddValue(nameof(SpeedLimit), SpeedLimit);
+            info.AddValue(nameof(SpawnMin), SpawnMin);
+            info.AddValue(nameof(SpawnMax), SpawnMax);
+            
+            // origin
+            info.AddValue("origin", Transform.origin);
         }
     }
 }

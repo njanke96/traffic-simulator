@@ -1,5 +1,8 @@
 using System;
 using System.Globalization;
+using System.IO;
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Formatters.Binary;
 using CSC473.Lib;
 using Godot;
 
@@ -19,7 +22,6 @@ namespace CSC473.Scripts.Ui
         private StateManager _stateManager;
         private Viewport _viewport3d;
         private Label _statusLabel;
-
         
         // sidebar
         private OptionButton _nodeType;
@@ -66,7 +68,7 @@ namespace CSC473.Scripts.Ui
                 nameof(_StatusLabelChangeRequested));
 
             _stateManager.Connect(nameof(StateManager.SelectionChanged), this, nameof(_SelectionChanged));
-            
+
             // // get node refs
             _viewport3d = GetNode<Viewport>("OuterMargin/MainContainer/VPSidebar" +
                                             "/ViewportContainer/Viewport");
@@ -190,7 +192,7 @@ namespace CSC473.Scripts.Ui
 
             // menu bar callbacks
             _fileMenu.Connect("id_pressed", this, nameof(_FileMenuCallback));
-            
+
             // force control states and default values
             SetNodeControlsEnabled(false);
             SetHintObjControlsEnabled(false);
@@ -457,6 +459,12 @@ namespace CSC473.Scripts.Ui
                 }
                 case FileMenuItem.Save:
                 {
+                    tmr.Connect("timeout", this, nameof(Save));
+                    AddChild(tmr);
+                    break;
+                }
+                case FileMenuItem.SaveAs:
+                {
                     tmr.Connect("timeout", this, nameof(SaveAs));
                     AddChild(tmr);
                     break;
@@ -469,16 +477,57 @@ namespace CSC473.Scripts.Ui
             }
         }
 
-        // for godot filedialog
         public void _OpenFileSelected(string path)
         {
-            GD.Print(path);
+            // find pathlayout
+            PathLayout pathLayout = (PathLayout) FindNode("PathLayout", true, false);
+            if (pathLayout == null)
+                throw new NullReferenceException($"{nameof(pathLayout)} is null.");
+            
+            IFormatter formatter = new BinaryFormatter();
+            Stream stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+            PathLayout newLayout = (PathLayout) formatter.Deserialize(stream);
+            
+            // replace existing pathlayout godot node
+            Node parent = pathLayout.GetParent();
+            parent.RemoveChild(pathLayout);
+            pathLayout.QueueFree();
+            
+            // add deserialized pathnodes and hintobjects to the scene tree
+            newLayout.AddChildrenFromMemory();
+            
+            parent.AddChild(newLayout);
+            newLayout.Name = nameof(PathLayout);
+
+            // reset any vehicles and rng
+            _stateManager.ResetVehicles();
+            
+            // rebuild the shortest paths dictionary
+            _stateManager.ShortestPathNeedsRebuild = true;
+            
+            _stateManager.LastSavePath = path;
+            _stateManager.EmitSignal(nameof(StateManager.StatusLabelChangeRequest), 
+                $"Loaded {path}");
         }
 
-        // for godot filedialog
         public void _SaveFileSelected(string path)
         {
-            GD.Print(path);
+            if (!path.EndsWith(".tsl"))
+                path += ".tsl";
+            
+            // find pathlayout
+            PathLayout pathLayout = (PathLayout) FindNode("PathLayout", true, false);
+            if (pathLayout == null)
+                throw new NullReferenceException($"{nameof(pathLayout)} is null.");
+
+            IFormatter formatter = new BinaryFormatter();
+            Stream stream = new FileStream(path, FileMode.Create, FileAccess.Write, FileShare.ReadWrite);
+            formatter.Serialize(stream, pathLayout);
+            stream.Close();
+
+            _stateManager.LastSavePath = path;
+            _stateManager.EmitSignal(nameof(StateManager.StatusLabelChangeRequest), 
+                $"Saved {path}");
         }
 
         // // public
@@ -547,7 +596,27 @@ namespace CSC473.Scripts.Ui
             filters[0] = new PlatformFileDialog.FileFilter();
             filters[0].Desc = "Layout";
             filters[0].Ext = "*.tsl";
-            GD.Print(PlatformFileDialog.OpenFileDialog(filters, "Load Layout", this, nameof(_OpenFileSelected)));
+            string path = 
+                PlatformFileDialog.OpenFileDialog(filters, "Load Layout", this, nameof(_OpenFileSelected));
+            if (path == null)
+                return;
+            
+            if (path.Length > 0)
+            {
+                // path available immediately
+                _OpenFileSelected(path);
+            }
+        }
+
+        public void Save()
+        {
+            if (_stateManager.LastSavePath == null)
+            {
+                SaveAs();
+                return;
+            }
+            
+            _SaveFileSelected(_stateManager.LastSavePath);
         }
 
         public void SaveAs()
@@ -556,7 +625,16 @@ namespace CSC473.Scripts.Ui
             filters[0] = new PlatformFileDialog.FileFilter();
             filters[0].Desc = "Layout";
             filters[0].Ext = "*.tsl";
-            GD.Print(PlatformFileDialog.SaveFileDialog(filters, "Save Layout", this, nameof(_SaveFileSelected)));
+            string path = 
+                PlatformFileDialog.SaveFileDialog(filters, "Save Layout", this, nameof(_SaveFileSelected));
+            if (path == null)
+                return;
+
+            if (path.Length > 0)
+            {
+                // path available immediately
+                _SaveFileSelected(path);
+            }
         }
         
         // // private

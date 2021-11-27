@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
+using System.Security.Permissions;
 using CSC473.Scripts.Ui;
 using Godot;
 
@@ -13,9 +15,10 @@ namespace CSC473.Scripts
     /// This node is to be dynamically created by the state manager.
     /// ALL Children of this node are assumed to be PathNode or HintObject instances.
     /// </summary>
-    public class PathLayout : Spatial
+    [Serializable]
+    public class PathLayout : Spatial, ISerializable
     {
-        public const string PausePrompt = "Pause the simulation before making changes to the path node graph.";
+        private const string PausePrompt = "Pause the simulation before making changes to the path node graph.";
 
         private List<PathNode> _pathNodes;
         // ReSharper disable once CollectionNeverQueried.Local
@@ -83,6 +86,34 @@ namespace CSC473.Scripts
                 return candidates[0];
             
             return candidates[_stateManager.RandInt(0, candidates.Count - 1)];
+        }
+
+        /// <summary>
+        /// Called after a PathLayout is deserialized from a file, and the Godot nodes need to be re-added to the
+        /// scene tree.
+        /// </summary>
+        public void AddChildrenFromMemory()
+        {
+            // sanity check
+            for (int i = GetChildCount() - 1; i >= 0; i--)
+            {
+                GetChild(i).QueueFree();
+            }
+            
+            foreach (PathNode pathNode in _pathNodes)
+            {
+                AddChild(pathNode);
+            }
+
+            foreach (HintObject hintObject in _hintObjects)
+            {
+                AddChild(hintObject);
+            }
+
+            // edge visual may not exist yet, if it does it was removed above
+            _edgeVisual = new EdgeVisual();
+            AddChild(_edgeVisual);
+            _edgeVisual.Rebuild(_edges, _pathNodes);
         }
 
         /// <summary>
@@ -403,6 +434,28 @@ namespace CSC473.Scripts
         {
             Vector3 between = new Vector3(u.Transform.origin) - new Vector3(v.Transform.origin);
             return between.Length();
+        }
+        
+        // // serialization
+
+        protected PathLayout(SerializationInfo info, StreamingContext context)
+        {
+            _pathNodes = new List<PathNode>();
+            _hintObjects = new List<HintObject>();
+            _edges = new HashSet<Tuple<PathNode, PathNode>>();
+            _shortestPaths = new Dictionary<Tuple<PathNode, PathNode>, LinkedList<PathNode>>();
+            
+            _pathNodes = (List<PathNode>) info.GetValue(nameof(_pathNodes), _pathNodes.GetType());
+            _hintObjects = (List<HintObject>) info.GetValue(nameof(_hintObjects), _hintObjects.GetType());
+            _edges = (HashSet<Tuple<PathNode, PathNode>>) info.GetValue(nameof(_edges), _edges.GetType());
+        }
+
+        [SecurityPermission(SecurityAction.Demand, SerializationFormatter = true)]
+        public void GetObjectData(SerializationInfo info, StreamingContext context)
+        {
+            info.AddValue(nameof(_pathNodes), _pathNodes);
+            info.AddValue(nameof(_hintObjects), _hintObjects);
+            info.AddValue(nameof(_edges), _edges);
         }
     }
 }
