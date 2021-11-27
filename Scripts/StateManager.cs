@@ -138,8 +138,6 @@ namespace CSC473.Scripts
             // start with a random seed from system random
             _rng = new RandomNumberGenerator();
             _rng.Seed = (ulong) new Random().Next() + (ulong) new Random().Next();
-            
-            // TODO: re-instantiate RNG on reset
         }
 
         public override void _Ready()
@@ -150,7 +148,7 @@ namespace CSC473.Scripts
             _trafficTimer.Autostart = true;
             _trafficTimer.WaitTime = 10f;
             _trafficTimer.Connect("timeout", this, nameof(TimerTimeout));
-            AddChild(_trafficTimer);
+            AddChild(_trafficTimer); 
         }
 
         public override void _Process(float delta)
@@ -191,6 +189,9 @@ namespace CSC473.Scripts
         public void ResetVehicles()
         {
             EmitSignal(nameof(ResetVehicleSimulation));
+            
+            // reset rng state
+            _rng.State = 0;
         }
 
         private string _RngSeedAsString()
