@@ -216,6 +216,7 @@ namespace CSC473.Scripts
             if (Transform.origin.y < -100)
             {
                 // I have fallen off the earth
+                GD.Print($"Vehice {Name} has fallen off the edge!");
                 QueueFree();
             }
         }
