@@ -47,6 +47,7 @@ namespace CSC473.Scripts
             ImmediateGeometry selectionBoundingBox = _stateManager.CurrentSelection.GetBoundingBox();
             Spatial selectionSpatial = (Spatial) _stateManager.CurrentSelection;
             selectionBoundingBox.Translate(selectionSpatial.Transform.origin);
+            selectionBoundingBox.RotateY(selectionSpatial.Rotation.y);
             
             // add as child
             AddChild(selectionBoundingBox);

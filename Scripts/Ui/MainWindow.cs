@@ -1,6 +1,7 @@
 using System;
 using System.Globalization;
 using System.IO;
+using System.Reflection;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 using CSC473.Lib;
@@ -483,10 +484,34 @@ namespace CSC473.Scripts.Ui
             PathLayout pathLayout = (PathLayout) FindNode("PathLayout", true, false);
             if (pathLayout == null)
                 throw new NullReferenceException($"{nameof(pathLayout)} is null.");
+
+            PathLayout newLayout;
+            Stream stream = null;
+
+            // handle deserialization and file i/o errors
+            try
+            {
+                IFormatter formatter = new BinaryFormatter();
+                stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+                newLayout = (PathLayout) formatter.Deserialize(stream);
+            }
+            catch (Exception e)
+            {
+                if (e is SerializationException || e is IOException || e is TargetInvocationException)
+                {
+                    GD.PrintErr(e);
+                    _stateManager.EmitSignal(nameof(StateManager.StatusLabelChangeRequest), 
+                        $"Could not open layout: {e.GetType().Name}. See log.");
+                    return;
+                }
+
+                throw;
+            }
+            finally
+            {
+                stream?.Dispose();
+            }
             
-            IFormatter formatter = new BinaryFormatter();
-            Stream stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
-            PathLayout newLayout = (PathLayout) formatter.Deserialize(stream);
             
             // replace existing pathlayout godot node
             Node parent = pathLayout.GetParent();
@@ -514,16 +539,37 @@ namespace CSC473.Scripts.Ui
         {
             if (!path.EndsWith(".tsl"))
                 path += ".tsl";
-            
+
             // find pathlayout
             PathLayout pathLayout = (PathLayout) FindNode("PathLayout", true, false);
             if (pathLayout == null)
                 throw new NullReferenceException($"{nameof(pathLayout)} is null.");
 
-            IFormatter formatter = new BinaryFormatter();
-            Stream stream = new FileStream(path, FileMode.Create, FileAccess.Write, FileShare.ReadWrite);
-            formatter.Serialize(stream, pathLayout);
-            stream.Close();
+            Stream stream = null;
+            
+            // handle serialization and file i/o errors
+            try
+            {
+                IFormatter formatter = new BinaryFormatter();
+                stream = new FileStream(path, FileMode.Create, FileAccess.Write, FileShare.ReadWrite);
+                formatter.Serialize(stream, pathLayout);
+            }
+            catch (Exception e)
+            {
+                if (e is SerializationException || e is IOException || e is TargetInvocationException)
+                {
+                    GD.PrintErr(e);
+                    _stateManager.EmitSignal(nameof(StateManager.StatusLabelChangeRequest), 
+                        $"Could not save layout: {e.GetType().Name}. See log.");
+                    return;
+                }
+
+                throw;
+            }
+            finally
+            {
+                stream?.Dispose();
+            }
 
             _stateManager.LastSavePath = path;
             _stateManager.EmitSignal(nameof(StateManager.StatusLabelChangeRequest), 
