@@ -350,6 +350,24 @@ namespace CSC473.Scripts
             // firstnode is actually the second node of the linked list, the first node of the linked list is where
             // this vehicle spawned
             LinkedListNode<PathNode> firstNode = layout.GetShortestPathHead(parent, end).Next;
+            
+            // collision rays (unit vectors) for a 120 degree fov (-60 to 60 degrees)
+            Vector3 startDir = new Vector3(0, 0, 1f);
+            for (int i = -60; i <= 60; i += 1)
+            {
+                vehicle.AddChild(RayFromUnitVector(new Vector3(startDir.Rotated(Vector3.Up, 
+                    Mathf.Deg2Rad(i)))));
+            }
+            
+            /*
+            vehicle.AddChild(RayFromUnitVector(new Vector3(0.866f, 0, 0.5f)));
+            vehicle.AddChild(RayFromUnitVector(new Vector3(0.643f, 0, 0.766f)));
+            vehicle.AddChild(RayFromUnitVector(new Vector3(0.342f, 0, 0.94f)));
+            vehicle.AddChild(RayFromUnitVector(new Vector3(0f, 0, 1f)));
+            vehicle.AddChild(RayFromUnitVector(new Vector3(-0.342f, 0, 0.94f)));
+            vehicle.AddChild(RayFromUnitVector(new Vector3(-0.643f, 0, 0.766f)));
+            vehicle.AddChild(RayFromUnitVector(new Vector3(-0.866f, 0, 0.5f)));
+            */
 
             // vehicle controller
             AIVehicleController controller = new AIVehicleController(firstNode);
@@ -367,6 +385,27 @@ namespace CSC473.Scripts
             // next spawn
             int spawnTimeoutMillis = _stateManager.RandInt((int) SpawnMin * 1000, (int) SpawnMax * 1000);
             Start(spawnTimeoutMillis / 1000f);
+        }
+
+        /// <summary>
+        /// Get a RayCast with appropriate properties for the AI driver from a unit vector.
+        /// </summary>
+        /// <param name="unit"></param>
+        /// <returns>The RayCast</returns>
+        private static RayCast RayFromUnitVector(Vector3 unit)
+        {
+            RayCast rc = new RayCast();
+            rc.CastTo = unit;
+            rc.Translate(new Vector3(0f, 1f, 0.5f));
+            rc.CollideWithAreas = true;
+            
+            // collide only with other vehicles and hint objects
+            rc.SetCollisionMaskBit(1, false);
+            rc.SetCollisionMaskBit(2, true);
+            
+            rc.Enabled = true;
+            
+            return rc;
         }
     }
 }

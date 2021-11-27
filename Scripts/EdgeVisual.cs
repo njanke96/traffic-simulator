@@ -24,6 +24,17 @@ namespace CSC473.Scripts
                 GetChild(i).QueueFree();
             }
 
+            // remove any EdgeVisual children from parent that isn't this EdgeVisual (can happen under save/load)
+            Node parent = GetParent();
+            for (int i = 0; i < parent.GetChildCount(); i++)
+            {
+                if (parent.GetChild(i) is EdgeVisual edgeVisual)
+                {
+                    if (edgeVisual == this) continue;
+                    edgeVisual.QueueFree();
+                }
+            }
+
             // build new ig
             ImmediateGeometry ig = new ImmediateGeometry();
             

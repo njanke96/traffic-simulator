@@ -13,7 +13,7 @@ namespace CSC473.Scripts
         // ReSharper disable once InconsistentNaming
         public class AIVehicleController : Node
         {
-            // // statics
+            // // constants
             
             // distance to target node required before travelling to next node in meters
             private const float NodeReachThresh = 1f;
@@ -24,17 +24,24 @@ namespace CSC473.Scripts
             // angle offset required to trigger full lock steering in radians
             private const float SteerAngleForMax = 0.698132f; // 40 deg
             
+            // vision raycast lengths (m)
+            private const int RayCastLength = 50;
+            
             // //
 
             // vehicle we are controlling
             private Vehicle _vehicle;
             
+            // unordered list of RayCast children of _vehicle
+            private HashSet<RayCast> _rayCasts;
+
             // the next node to travel to
             private LinkedListNode<PathNode> _nextNode;
 
             // is the next node the last node
             private bool _nextNodeLast;
 
+            // total time elapsed since spawn
             private float _totalElapsed;
 
             public AIVehicleController(LinkedListNode<PathNode> firstNode)
@@ -51,6 +58,17 @@ namespace CSC473.Scripts
                 
                 // is the next node an end node
                 _nextNodeLast = _nextNode.Value.NodeType == PathNodeType.End;
+                
+                // find raycast nodes and scale them, store their references
+                _rayCasts = new HashSet<RayCast>();
+                for (int i = 0; i < _vehicle.GetChildCount(); i++)
+                {
+                    if (!(_vehicle.GetChild(i) is RayCast rayCast)) 
+                        continue;
+                    
+                    _rayCasts.Add(rayCast);
+                    rayCast.CastTo *= RayCastLength;
+                }
             }
 
             public override void _Process(float delta)

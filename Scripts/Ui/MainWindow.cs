@@ -532,7 +532,6 @@ namespace CSC473.Scripts.Ui
             // rebuild the shortest paths dictionary
             _stateManager.ShortestPathNeedsRebuild = true;
             
-            _stateManager.LastSavePath = path;
             _stateManager.EmitSignal(nameof(StateManager.StatusLabelChangeRequest), 
                 $"Loaded {path}");
         }
