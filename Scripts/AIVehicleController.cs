@@ -75,6 +75,7 @@ namespace CSC473.Scripts
 
             // the next node to travel to
             private LinkedListNode<PathNode> _nextNode;
+            private float _initialSpeed;
 
             // is the next node the last node
             private bool _nextNodeLast;
@@ -85,9 +86,14 @@ namespace CSC473.Scripts
             // coefficient of aggression
             private float _agroCoeff;
 
-            public AIVehicleController(LinkedListNode<PathNode> firstNode)
+            /// <summary>
+            /// </summary>
+            /// <param name="firstNode">first node to face spawned vehicle to</param>
+            /// <param name="initialSpeed">in kph</param>
+            public AIVehicleController(LinkedListNode<PathNode> firstNode, float initialSpeed)
             {
                 _nextNode = firstNode;
+                _initialSpeed = initialSpeed;
                 _collidingObjects = new Dictionary<Object, RayCollisionEvent>();
             }
 
@@ -101,6 +107,10 @@ namespace CSC473.Scripts
                 
                 // rotate to face next node on spawn
                 _vehicle.RotateY(AngleToNext());
+                
+                // set speed to speed limit of this node
+                Vector3 forward = Vector3.Back.Rotated(Vector3.Up, _vehicle.Rotation.y);
+                _vehicle.LinearVelocity = forward * _initialSpeed / 3.6f;
                 
                 // is the next node an end node
                 _nextNodeLast = _nextNode.Value.NodeType == PathNodeType.End;

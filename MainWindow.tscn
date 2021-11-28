@@ -227,7 +227,7 @@ text = "Speed Limit (kph)"
 margin_left = 115.0
 margin_right = 247.0
 margin_bottom = 24.0
-hint_tooltip = "The speed AI drivers will try to be driving at when driving TOWARDS this node."
+hint_tooltip = "The speed AI drivers will try to be driving at when driving TOWARDS this node. On start nodes, this is the initial speed."
 size_flags_horizontal = 3
 editable = false
 
