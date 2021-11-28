@@ -406,6 +406,9 @@ namespace CSC473.Scripts.Ui
                 // a vehicle was selected
                 UpdateVehicleLabels($"{vehicle.ClassName}", $"{(int) vehicle.Speed} km/h",
                     $"{vehicle.EngineForce}", $"{vehicle.Brake}", $"{vehicle.Steering}");
+                
+                _stateManager.EmitSignal(nameof(StateManager.StatusLabelChangeRequest), 
+                    $"Selected vehicle of type {vehicle.ClassName} with aggression coefficient {vehicle.AgroCoeff}");
             }
         }
 
