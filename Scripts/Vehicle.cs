@@ -14,6 +14,9 @@ namespace CSC473.Scripts
         // engine performance and steering ratio for controller
         public float EnginePerf;
         public float SteerRatio;
+        
+        // set by controller
+        public float AgroCoeff;
 
         // body color
         private Color _color;

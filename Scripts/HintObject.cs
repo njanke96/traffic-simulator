@@ -151,7 +151,6 @@ namespace CSC473.Scripts
         {
             HintType = (HintObjectType) info.GetInt32(nameof(HintType));
             Channel = info.GetInt32(nameof(Channel));
-            HintRotation = info.GetInt32(nameof(HintRotation));
             
             // origin
             Transform = Transform.Translated((Vector3) info.GetValue("origin", typeof(Vector3)));
@@ -162,7 +161,6 @@ namespace CSC473.Scripts
         {
             info.AddValue(nameof(HintType), (int)HintType);
             info.AddValue(nameof(Channel), Channel);
-            info.AddValue(nameof(HintRotation), HintRotation);
             
             // origin
             info.AddValue("origin", Transform.origin);

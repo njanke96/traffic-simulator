@@ -96,7 +96,8 @@ namespace CSC473.Scripts
                 _stateManager = GetNode<StateManager>("/root/StateManager");
                 _vehicle = GetParent<Vehicle>();
 
-                _agroCoeff = _stateManager.RandInt(20, 100) / 100f;
+                _agroCoeff = _stateManager.RandInt(20, 90) / 100f;
+                _vehicle.AgroCoeff = _agroCoeff;
                 
                 // rotate to face next node on spawn
                 _vehicle.RotateY(AngleToNext());
@@ -172,10 +173,10 @@ namespace CSC473.Scripts
                         continue;
                     
                     // not sure if this is even possible
-                    if (!(collider is Spatial spCollider))
+                    if (!(collider is Spatial))
                         continue;
                     
-                    float distance = (spCollider.Transform.origin - _vehicle.Transform.origin).Length();
+                    float distance = (rayCast.GetCollisionPoint() - _vehicle.Transform.origin).Length();
                     
                     // not a new collision?
                     if (_collidingObjects.ContainsKey(collider))
@@ -207,7 +208,7 @@ namespace CSC473.Scripts
                 }
                 
                 // influence on steering/braking
-                float brakeInfluence = 0;
+                float brakeInfluence = -1;
                 //float steerInfluence = 0;
                 
                 // process ray collisions
@@ -247,29 +248,15 @@ namespace CSC473.Scripts
                                 continue;
                             }
 
-                            // lateral normal vector of the light
-                            Vector3 latNorm = Vector3.Right.Rotated(Vector3.Up, hintObject.Rotation.y);
-                            
-                            // extends 10m left and right
-                            Vector3 s1 = latNorm * 10;
-                            Vector3 s2 = latNorm * -10;
-                            
-                            // point on the line between s1 and s2 closest to the vehicle
-                            Vector3 lightTarget = Geometry.GetClosestPointToSegment(_vehicle.Transform.origin, s1, s2);
-                            Vector3 between = lightTarget - _vehicle.Transform.origin;
-                            
-                            float distance = rce.Distance;
-                            GD.Print(_vehicle.BodyColor, _vehicle.ClassName, distance);
-                            
                             // traffic light stop?
-                            if (distance <= 10f)
+                            if (rce.Distance <= 10f)
                             {
                                 brakeInfluence = 1f;
                                 continue;
                             }
                             
                             // assumption: the vehicle is headed straight at the target (faster calculation)
-                            bigT = distance / _vehicle.LinearVelocity.Length();
+                            bigT = rce.Distance / _vehicle.LinearVelocity.Length();
                         }
                         else
                         {
@@ -282,10 +269,6 @@ namespace CSC473.Scripts
                         // unknown collider
                         continue;
                     }
-
-                    // no imminent collision?
-                    if (bigT < 0)
-                        continue;
                     
                     // close enough for a full stop?
                     if (rce.Distance <= MinDistTotalStop)
@@ -293,27 +276,24 @@ namespace CSC473.Scripts
                         brakeInfluence = 1f;
                         continue;
                     }
-                    
+
+                    // no imminent collision?
+                    if (bigT < 0)
+                        continue;
+
                     // estimate stopping distance
                     float stopDist = _vehicle.LinearVelocity.LengthSquared() / (2 * 0.6f * 9.8f);
-                    
-                    // humans always think they can stop faster than they can
-                    //stopDist -= _stateManager.RandInt(10, 30);
-                    
-                    // get time to cover worst case stopping distance
+
+                    // get time to cover estimated stopping distance
                     float time = stopDist / _vehicle.LinearVelocity.Length();
 
-                    if (time > bigT)
-                    {
-                        brakeInfluence = 1f;
-                    }
-                    else
-                    {
-                        float desiredBraking = (1.5f - _agroCoeff) * time / bigT;
-                        if (desiredBraking > brakeInfluence)
-                            brakeInfluence = desiredBraking;
-                    }
+                    float desiredBraking = (1 - _agroCoeff) * time / bigT;
+                    if (desiredBraking > brakeInfluence)
+                        brakeInfluence = Mathf.Min(1f, desiredBraking);
                 }
+                // //
+                
+                // // Steering and acceleration
                 
                 // steer towards next node in path
                 float angleTo = AngleToNext();
@@ -327,9 +307,9 @@ namespace CSC473.Scripts
                     _vehicle.SetSteerValue(0f);
                 }
 
-                if (Mathf.IsEqualApprox(brakeInfluence, 0.0f, 1e-4f))
+                if (brakeInfluence < 0)
                 {
-                    // accelerate to speed limit
+                    // brake influence is not set, accelerate to speed limit
                     if (_vehicle.Speed < _nextNode.Value.SpeedLimit)
                     {
                         // we are not speeding
@@ -348,6 +328,12 @@ namespace CSC473.Scripts
                         _vehicle.SetAccelRatio(0.0f);
                         _vehicle.SetBrakeRatio(0.0f);
                     }
+                }
+                else if (Mathf.IsEqualApprox(brakeInfluence, 0f, 0.01f))
+                {
+                    // coasting, maintain 10 kph until within min stopping distance of something
+                    _vehicle.SetBrakeRatio(0f);
+                    _vehicle.SetAccelRatio(_vehicle.Speed < 10 ? 0.3f : 0f);
                 }
                 else
                 {
