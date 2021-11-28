@@ -60,7 +60,7 @@ namespace CSC473.Scripts
 
         public override float EnginePerf() { return 150f; }
         
-        public override float SteerRatio() { return 0.5f; }
+        public override float SteerRatio() { return 0.6f; }
 
         public override int ColorMaterialIndex() { return 1; }
 
@@ -153,7 +153,7 @@ namespace CSC473.Scripts
 
         public override float EnginePerf() { return 240f; }
         
-        public override float SteerRatio() { return 0.5f; }
+        public override float SteerRatio() { return 0.75f; }
 
         public override int ColorMaterialIndex() { return 1; }
 
@@ -184,7 +184,7 @@ namespace CSC473.Scripts
 
         public override float EnginePerf() { return 240f; }
         
-        public override float SteerRatio() { return 0.5f; }
+        public override float SteerRatio() { return 0.6f; }
 
         public override int ColorMaterialIndex() { return 1; }
 
@@ -213,6 +213,8 @@ namespace CSC473.Scripts
         
         // the node to add spawned vehicles as children to
         private readonly Node _vehiclesRoot;
+
+        private Vehicle _lastSpawned;
         
         public float SpawnMin;
         public float SpawnMax;
@@ -289,6 +291,18 @@ namespace CSC473.Scripts
 
         public void _TimerCallback()
         {
+            // check distance from last spawned
+            if (_lastSpawned != null)
+            {
+                if (!IsInstanceValid(_lastSpawned))
+                {
+                    _lastSpawned = null;
+                }
+                else if (GetParent<Spatial>().Transform.origin.DistanceTo(_lastSpawned.Transform.origin) < 10)
+                    return;
+                
+            }
+            
             // random spawn
             float randVal = _stateManager.RandInt(0, 100) / 100f;
 
@@ -368,6 +382,9 @@ namespace CSC473.Scripts
             
             // set color
             vehicle.BodyColor = color;
+
+            _lastSpawned = vehicle;
+            
             NextSpawn();
         }
 
