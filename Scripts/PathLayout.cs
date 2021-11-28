@@ -215,6 +215,27 @@ namespace CSC473.Scripts
                 }
             }
         }
+        
+        /// <summary>
+        /// Reset the layout removing godot nodes safely.
+        /// </summary>
+        public void ResetLayout()
+        {
+            for (var i = _pathNodes.Count - 1; i >= 0; i--)
+            {
+                _pathNodes[i].QueueFree();
+                _pathNodes.RemoveAt(i);
+            }
+
+            for (var i = _hintObjects.Count - 1; i >= 0; i--)
+            {
+                _hintObjects[i].QueueFree();
+                _hintObjects.RemoveAt(i);
+            }
+            
+            _edges.Clear();
+            _edgeVisual.Rebuild(_edges, _pathNodes);
+        }
 
         public override void _Ready()
         {

@@ -14,6 +14,7 @@ namespace CSC473.Scripts.Ui
         // Menu item ids
         private enum FileMenuItem
         {
+            New,
             Load,
             Save,
             SaveAs,
@@ -176,6 +177,8 @@ namespace CSC473.Scripts.Ui
             _statusLabel.Text = "Press F2 to control the camera.";
 
             // populate menubar
+            _fileMenu.AddItem("New", (int)FileMenuItem.New);
+            _fileMenu.AddSeparator();
             _fileMenu.AddItem("Load Layout", (int) FileMenuItem.Load);
             _fileMenu.AddItem("Save Layout", (int) FileMenuItem.Save);
             _fileMenu.AddItem("Save Layout As", (int) FileMenuItem.SaveAs);
@@ -469,6 +472,14 @@ namespace CSC473.Scripts.Ui
 
             switch (fmId)
             {
+                case FileMenuItem.New:
+                {
+                    _stateManager.ResetVehicles();
+                    PathLayout pathLayout = (PathLayout) FindNode("PathLayout", true, false);
+                    pathLayout.ResetLayout();
+                    _stateManager.LastSavePath = null;
+                    break;
+                }
                 case FileMenuItem.Load:
                 {
                     tmr.Connect("timeout", this, nameof(Load));
