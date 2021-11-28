@@ -59,6 +59,12 @@ namespace CSC473.Scripts
             
             // distance required along a collision path for a vehicle to stop
             private const int MinDistTotalStop = 5;
+            
+            // estimated time until collision values less than this are considered "imminent"
+            private const float ImminentThresh = 1f;
+            
+            // direction vector angle offset for comparing collision times
+            private const float CollisionTestAngle = 0.349f; // 20 deg
 
             // //
             
@@ -219,13 +225,16 @@ namespace CSC473.Scripts
                 
                 // influence on steering/braking
                 float brakeInfluence = -1;
-                //float steerInfluence = 0;
+                float steerInfluence = 0;
+                bool steerInfluenceSet = false;
                 
                 // process ray collisions
                 foreach (var kv in _collidingObjects)
                 {
                     Object collider = kv.Key;
                     RayCollisionEvent rce = kv.Value;
+                    
+                    // estimated time until collision
                     float bigT;
 
                     if (rce.Time < ReactionTime)
@@ -239,6 +248,30 @@ namespace CSC473.Scripts
                         bigT = EstimateCollisionTime(_vehicle.Transform.origin, targetVehicle.Transform.origin, 
                             _vehicle.LinearVelocity, targetVehicle.LinearVelocity, _vehicle.GetApproxRadius(), 
                             targetVehicle.GetApproxRadius());
+                        
+                        if (bigT > 0 && bigT <= ImminentThresh)
+                        {
+                            // panic and steer to avoid
+
+                            // compare estimated collision times if turning left or right
+                            float leftT = EstimateCollisionTime(_vehicle.Transform.origin, 
+                                targetVehicle.Transform.origin, 
+                                _vehicle.LinearVelocity.Rotated(Vector3.Up, CollisionTestAngle), 
+                                targetVehicle.LinearVelocity, 
+                                _vehicle.GetApproxRadius(), 
+                                targetVehicle.GetApproxRadius());
+                            
+                            float rightT = EstimateCollisionTime(_vehicle.Transform.origin, 
+                                targetVehicle.Transform.origin, 
+                                _vehicle.LinearVelocity.Rotated(Vector3.Up, -1f*CollisionTestAngle), 
+                                targetVehicle.LinearVelocity, 
+                                _vehicle.GetApproxRadius(), 
+                                targetVehicle.GetApproxRadius());
+                            
+                            // turn in the direction that will result in a greater time to collision
+                            steerInfluenceSet = true;
+                            steerInfluence = leftT < rightT ? 1f : -1f;
+                        }
                     }
                     else if (collider is Area area)
                     {
@@ -265,7 +298,7 @@ namespace CSC473.Scripts
                                 continue;
                             }
                             
-                            // assumption: the vehicle is headed straight at the target (faster calculation)
+                            // pretend the vehicle is headed straight at the traffic light
                             bigT = rce.Distance / _vehicle.LinearVelocity.Length();
                         }
                         else
@@ -287,7 +320,7 @@ namespace CSC473.Scripts
                         continue;
                     }
 
-                    // no imminent collision?
+                    // no collision in future?
                     if (bigT < 0)
                         continue;
 
@@ -304,17 +337,25 @@ namespace CSC473.Scripts
                 // //
                 
                 // // Steering and acceleration
-                
-                // steer towards next node in path
-                float angleTo = AngleToNext();
-                if (Mathf.Abs(angleTo) >= SteerThresh)
+
+                if (steerInfluenceSet)
                 {
-                    _vehicle.SetSteerValue(Mathf.Clamp(angleTo / SteerAngleForMax, -1f, 1f));
+                    // steer to avoid
+                    _vehicle.SetSteerValue(steerInfluence);
                 }
                 else
                 {
-                    // no steering required
-                    _vehicle.SetSteerValue(0f);
+                    // steer towards next node in path
+                    float angleTo = AngleToNext();
+                    if (Mathf.Abs(angleTo) >= SteerThresh)
+                    {
+                        _vehicle.SetSteerValue(Mathf.Clamp(angleTo / SteerAngleForMax, -1f, 1f));
+                    }
+                    else
+                    {
+                        // no steering required
+                        _vehicle.SetSteerValue(0f);
+                    }
                 }
 
                 if (brakeInfluence < 0)
