@@ -249,6 +249,12 @@ namespace CSC473.Scripts
         {
             Steering = SteerRatio * steering;
         }
+        
+        // get approx radius of AABB
+        public float GetApproxRadius()
+        {
+            return 2.0f;
+        }
 
         public ImmediateGeometry GetBoundingBox()
         {

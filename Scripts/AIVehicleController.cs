@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using CSC473.Lib;
 
 namespace CSC473.Scripts
 {
@@ -19,15 +21,15 @@ namespace CSC473.Scripts
             // time this object has been seen for
             public float Time;
             
-            // has the time been updated this frame?
-            public bool TimeUpdatedThisFrame;
+            // has the Distance, Angle, and Time been updated this frame?
+            public bool UpdatedThisFrame;
 
             public RayCollisionEvent(float distance, float angle, float time)
             {
                 Distance = distance;
                 Angle = angle;
                 Time = time;
-                TimeUpdatedThisFrame = false;
+                UpdatedThisFrame = false;
             }
         }
         
@@ -55,7 +57,12 @@ namespace CSC473.Scripts
             // time required for AI to "see" an object in milliseconds
             private const int ReactionTime = 250;
             
+            // distance required along a collision path for a vehicle to stop
+            private const int MinDistTotalStop = 5;
+
             // //
+            
+            private StateManager _stateManager;
 
             // vehicle we are controlling
             private Vehicle _vehicle;
@@ -83,6 +90,7 @@ namespace CSC473.Scripts
 
             public override void _Ready()
             {
+                _stateManager = GetNode<StateManager>("/root/StateManager");
                 _vehicle = GetParent<Vehicle>();
                 
                 // rotate to face next node on spawn
@@ -138,7 +146,7 @@ namespace CSC473.Scripts
                 // reset RayCollisionEvent flags
                 foreach (var kv in _collidingObjects)
                 {
-                    kv.Value.TimeUpdatedThisFrame = false;
+                    kv.Value.UpdatedThisFrame = false;
                 }
 
                 // clear collisions which are no longer valid
@@ -173,10 +181,10 @@ namespace CSC473.Scripts
                         colliderEv.Distance = distance;
                         
                         // update time, check it has not already been updated by another iteration of this loop
-                        if (!colliderEv.TimeUpdatedThisFrame)
+                        if (!colliderEv.UpdatedThisFrame)
                         {
                             colliderEv.Time += delta * 1000;
-                            colliderEv.TimeUpdatedThisFrame = true;
+                            colliderEv.UpdatedThisFrame = true;
                         }
 
                         continue;
@@ -186,23 +194,65 @@ namespace CSC473.Scripts
                      * Note on angles:
                      * Here the angle is assumed to be the LAST colliding ray's stored angle. This is faster
                      * than calculating the angle by vectors but can lead to large amounts of error
-                     * if the object seen by the vehicle is very large.
+                     * if the object seen by the vehicle is very large. Since this angle is used for steering decisions,
+                     * the error can be seen as artificial human error.
                      */
                     _collidingObjects.Add(collider, 
                         new RayCollisionEvent(distance, VehicleSpawner.GetRayAngle(rayCast), 0));
                 }
                 
+                // influence on steering/braking
+                float brakeInfluence = 0;
+                float steerInfluence = 0;
+                
                 // process ray collisions
                 foreach (var kv in _collidingObjects)
                 {
                     Object collider = kv.Key;
-                    RayCollisionEvent collisionEv = kv.Value;
-
+                    RayCollisionEvent rce = kv.Value;
+                    float bigT;
+                    
                     if (collider is Vehicle targetVehicle)
                     {
-                        GD.Print($"Vehicle {_vehicle.Name}: I can see vehicle {targetVehicle.Name}!");
-                        GD.Print($"Distance: {collisionEv.Distance}, Angle: {Mathf.Rad2Deg(collisionEv.Angle)}, Time: {collisionEv.Time}");
-                        GD.Print("---");
+                        bigT = EstimateCollisionTime(_vehicle.Transform.origin, targetVehicle.Transform.origin, 
+                            _vehicle.LinearVelocity, targetVehicle.LinearVelocity, _vehicle.GetApproxRadius(), 
+                            targetVehicle.GetApproxRadius());
+                    }
+                    else
+                    {
+                        // unknown collider
+                        continue;
+                    }
+
+                    // no imminent collision?
+                    if (bigT < 0)
+                        continue;
+                    
+                    // close enough for a full stop?
+                    if (rce.Distance <= MinDistTotalStop)
+                    {
+                        brakeInfluence = 1f;
+                        continue;
+                    }
+                    
+                    // estimate stopping distance
+                    float stopDist = _vehicle.LinearVelocity.LengthSquared() / (2 * 0.6f * 9.8f);
+                    
+                    // humans always think they can stop faster than they can
+                    //stopDist -= _stateManager.RandInt(10, 30);
+                    
+                    // get time to cover worst case stopping distance
+                    float time = stopDist / _vehicle.LinearVelocity.Length();
+
+                    if (time > bigT)
+                    {
+                        brakeInfluence = 1f;
+                    }
+                    else
+                    {
+                        float desiredBraking = 0.8f * time / bigT;
+                        if (desiredBraking > brakeInfluence)
+                            brakeInfluence = desiredBraking;
                     }
                 }
                 
@@ -218,25 +268,34 @@ namespace CSC473.Scripts
                     _vehicle.SetSteerValue(0f);
                 }
 
-                // accelerate to speed limit
-                if (_vehicle.Speed < _nextNode.Value.SpeedLimit)
+                if (brakeInfluence < 0.01)
                 {
-                    // we are not speeding
-                    _vehicle.SetAccelRatio(0.5f);
-                    _vehicle.SetBrakeRatio(0f);
-                }
-                else if (_vehicle.Speed > _nextNode.Value.SpeedLimit + 10)
-                {
-                    // we are speeding too much
-                    _vehicle.SetAccelRatio(0.0f);
-                    _vehicle.SetBrakeRatio(0.5f);
+                    // accelerate to speed limit
+                    if (_vehicle.Speed < _nextNode.Value.SpeedLimit)
+                    {
+                        // we are not speeding
+                        _vehicle.SetAccelRatio(0.5f);
+                        _vehicle.SetBrakeRatio(0f);
+                    }
+                    else if (_vehicle.Speed > _nextNode.Value.SpeedLimit + 10)
+                    {
+                        // we are speeding too much
+                        _vehicle.SetAccelRatio(0.0f);
+                        _vehicle.SetBrakeRatio(0.5f);
+                    }
+                    else
+                    {
+                        // we are doing fine
+                        _vehicle.SetAccelRatio(0.0f);
+                        _vehicle.SetBrakeRatio(0.0f);
+                    }
                 }
                 else
                 {
-                    // we are doing fine
-                    _vehicle.SetAccelRatio(0.0f);
-                    _vehicle.SetBrakeRatio(0.0f);
+                    _vehicle.SetAccelRatio(0);
+                    _vehicle.SetBrakeRatio(brakeInfluence);
                 }
+                
             }
             
             /// <summary>
@@ -260,6 +319,44 @@ namespace CSC473.Scripts
                 return angle;
             }
 
+            private float EstimateCollisionTime(Vector3 posU, Vector3 posV, Vector3 velU, Vector3 velV, float rU, float rV)
+            {
+                float x = posU.x - posV.x;
+                float z = posU.z - posV.z;
+                float vx = velU.x - velV.x;
+                float vz = velU.z - velV.z;
+
+                float a = Mathf.Pow(vx, 2) + Mathf.Pow(vz, 2);
+                float b = 2 * (x * vx + z * vz);
+                float c = Mathf.Pow(x, 2) + Mathf.Pow(z, 2) - Mathf.Pow(rU + rV, 2);
+
+                float discrim = Mathf.Pow(b, 2) - 4 * a * c;
+                
+                // no collision
+                if (discrim < 0)
+                    return -1;
+
+                float discrimSqrt;
+                try
+                {
+                    discrimSqrt = 1 / FastMath.InvSqrt(discrim);
+                }
+                catch (Exception e)
+                {
+                    GD.PushWarning($"Fast InvSqrt fail: {e}");
+                    return -1;
+                }
+
+                float root1 = (-1 * b + discrimSqrt) / (2 * a);
+                float root2 = (-1 * b - discrimSqrt) / (2 * a);
+
+                // a collision has happened in the past
+                if (root1 < 0 || root2 < 0)
+                    return -1;
+
+                return Mathf.Min(root1, root2);
+            }
+            
             private float DistToNext()
             {
                 return (_nextNode.Value.Transform.origin - _vehicle.Transform.origin).Length();
