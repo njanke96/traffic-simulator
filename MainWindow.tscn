@@ -53,15 +53,15 @@ __meta__ = {
 [node name="MainContainer" type="VBoxContainer" parent="MainWindow/OuterMargin"]
 margin_left = 8.0
 margin_top = 8.0
-margin_right = 1016.0
-margin_bottom = 592.0
+margin_right = 1272.0
+margin_bottom = 712.0
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
 [node name="MenuButtons" type="HBoxContainer" parent="MainWindow/OuterMargin/MainContainer"]
 pause_mode = 2
-margin_right = 1008.0
+margin_right = 1264.0
 margin_bottom = 20.0
 size_flags_horizontal = 3
 
@@ -84,7 +84,7 @@ switch_on_hover = true
 [node name="ToolBar" type="HBoxContainer" parent="MainWindow/OuterMargin/MainContainer"]
 pause_mode = 2
 margin_top = 24.0
-margin_right = 1008.0
+margin_right = 1264.0
 margin_bottom = 48.0
 
 [node name="Play" type="ToolButton" parent="MainWindow/OuterMargin/MainContainer/ToolBar"]
@@ -151,14 +151,14 @@ icon = ExtResource( 9 )
 
 [node name="VPSidebar" type="HSplitContainer" parent="MainWindow/OuterMargin/MainContainer"]
 margin_top = 52.0
-margin_right = 1008.0
-margin_bottom = 558.0
+margin_right = 1264.0
+margin_bottom = 678.0
 mouse_filter = 1
 size_flags_vertical = 3
 
 [node name="ViewportContainer" type="ViewportContainer" parent="MainWindow/OuterMargin/MainContainer/VPSidebar"]
-margin_right = 800.0
-margin_bottom = 506.0
+margin_right = 1005.0
+margin_bottom = 626.0
 mouse_filter = 1
 size_flags_horizontal = 3
 size_flags_vertical = 3
@@ -173,28 +173,28 @@ shadow_atlas_size = 4096
 script = ExtResource( 2 )
 
 [node name="ScrollContainer" type="ScrollContainer" parent="MainWindow/OuterMargin/MainContainer/VPSidebar"]
-margin_left = 812.0
-margin_right = 1008.0
-margin_bottom = 506.0
+margin_left = 1017.0
+margin_right = 1264.0
+margin_bottom = 626.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
 size_flags_stretch_ratio = 0.25
 
 [node name="SideBar" type="VBoxContainer" parent="MainWindow/OuterMargin/MainContainer/VPSidebar/ScrollContainer"]
 pause_mode = 2
-margin_right = 185.0
-margin_bottom = 542.0
+margin_right = 247.0
+margin_bottom = 608.0
 size_flags_horizontal = 3
 custom_constants/separation = 8
 
 [node name="LSelected" type="Label" parent="MainWindow/OuterMargin/MainContainer/VPSidebar/ScrollContainer/SideBar"]
-margin_right = 185.0
+margin_right = 247.0
 margin_bottom = 14.0
 text = "Selected Node:"
 
 [node name="TypeContainer" type="HBoxContainer" parent="MainWindow/OuterMargin/MainContainer/VPSidebar/ScrollContainer/SideBar"]
 margin_top = 22.0
-margin_right = 185.0
+margin_right = 247.0
 margin_bottom = 42.0
 
 [node name="LType" type="Label" parent="MainWindow/OuterMargin/MainContainer/VPSidebar/ScrollContainer/SideBar/TypeContainer"]
@@ -206,14 +206,14 @@ text = "Node Type"
 
 [node name="Type" type="OptionButton" parent="MainWindow/OuterMargin/MainContainer/VPSidebar/ScrollContainer/SideBar/TypeContainer"]
 margin_left = 72.0
-margin_right = 185.0
+margin_right = 247.0
 margin_bottom = 20.0
 size_flags_horizontal = 3
 disabled = true
 
 [node name="SpeedLimitContainer" type="HBoxContainer" parent="MainWindow/OuterMargin/MainContainer/VPSidebar/ScrollContainer/SideBar"]
 margin_top = 50.0
-margin_right = 185.0
+margin_right = 247.0
 margin_bottom = 74.0
 
 [node name="LSpeedLimit" type="Label" parent="MainWindow/OuterMargin/MainContainer/VPSidebar/ScrollContainer/SideBar/SpeedLimitContainer"]
@@ -225,7 +225,7 @@ text = "Speed Limit (kph)"
 
 [node name="SpeedLimit" type="LineEdit" parent="MainWindow/OuterMargin/MainContainer/VPSidebar/ScrollContainer/SideBar/SpeedLimitContainer"]
 margin_left = 115.0
-margin_right = 185.0
+margin_right = 247.0
 margin_bottom = 24.0
 hint_tooltip = "The speed AI drivers will try to be driving at when driving TOWARDS this node."
 size_flags_horizontal = 3
@@ -233,7 +233,7 @@ editable = false
 
 [node name="MinSpawnTimerContainer" type="HBoxContainer" parent="MainWindow/OuterMargin/MainContainer/VPSidebar/ScrollContainer/SideBar"]
 margin_top = 82.0
-margin_right = 185.0
+margin_right = 247.0
 margin_bottom = 106.0
 
 [node name="LMinSpawnTimer" type="Label" parent="MainWindow/OuterMargin/MainContainer/VPSidebar/ScrollContainer/SideBar/MinSpawnTimerContainer"]
@@ -245,7 +245,7 @@ text = "Spawn Interval Min"
 
 [node name="MinSpawnTimer" type="LineEdit" parent="MainWindow/OuterMargin/MainContainer/VPSidebar/ScrollContainer/SideBar/MinSpawnTimerContainer"]
 margin_left = 125.0
-margin_right = 185.0
+margin_right = 247.0
 margin_bottom = 24.0
 hint_tooltip = "The minimum amount of time in seconds between vehicle spawns (for start nodes only)."
 size_flags_horizontal = 3
@@ -253,7 +253,7 @@ editable = false
 
 [node name="MaxSpawnTimerContainer" type="HBoxContainer" parent="MainWindow/OuterMargin/MainContainer/VPSidebar/ScrollContainer/SideBar"]
 margin_top = 114.0
-margin_right = 185.0
+margin_right = 247.0
 margin_bottom = 138.0
 
 [node name="LMaxSpawnTimer" type="Label" parent="MainWindow/OuterMargin/MainContainer/VPSidebar/ScrollContainer/SideBar/MaxSpawnTimerContainer"]
@@ -265,7 +265,7 @@ text = "Spawn Interval Max"
 
 [node name="MaxSpawnTimer" type="LineEdit" parent="MainWindow/OuterMargin/MainContainer/VPSidebar/ScrollContainer/SideBar/MaxSpawnTimerContainer"]
 margin_left = 127.0
-margin_right = 185.0
+margin_right = 247.0
 margin_bottom = 24.0
 hint_tooltip = "The maximum amount of time in seconds between vehicle spawns (for start nodes only)."
 size_flags_horizontal = 3
@@ -273,7 +273,7 @@ editable = false
 
 [node name="NodeUpdateHint" type="Label" parent="MainWindow/OuterMargin/MainContainer/VPSidebar/ScrollContainer/SideBar"]
 margin_top = 146.0
-margin_right = 185.0
+margin_right = 247.0
 margin_bottom = 160.0
 __meta__ = {
 "_edit_use_anchors_": false
@@ -281,42 +281,60 @@ __meta__ = {
 
 [node name="HSeparator" type="HSeparator" parent="MainWindow/OuterMargin/MainContainer/VPSidebar/ScrollContainer/SideBar"]
 margin_top = 168.0
-margin_right = 185.0
+margin_right = 247.0
 margin_bottom = 172.0
 
 [node name="LSelectedVeh" type="Label" parent="MainWindow/OuterMargin/MainContainer/VPSidebar/ScrollContainer/SideBar"]
 margin_top = 180.0
-margin_right = 185.0
+margin_right = 247.0
 margin_bottom = 194.0
 text = "Selected Vehicle:"
 
 [node name="LVehClass" type="Label" parent="MainWindow/OuterMargin/MainContainer/VPSidebar/ScrollContainer/SideBar"]
 margin_top = 202.0
-margin_right = 185.0
+margin_right = 247.0
 margin_bottom = 216.0
 text = "Class: N/A"
 
 [node name="LVehSpeed" type="Label" parent="MainWindow/OuterMargin/MainContainer/VPSidebar/ScrollContainer/SideBar"]
 margin_top = 224.0
-margin_right = 185.0
+margin_right = 247.0
 margin_bottom = 238.0
 text = "Speed: N/A"
 
-[node name="HSeparator2" type="HSeparator" parent="MainWindow/OuterMargin/MainContainer/VPSidebar/ScrollContainer/SideBar"]
+[node name="LVAccel" type="Label" parent="MainWindow/OuterMargin/MainContainer/VPSidebar/ScrollContainer/SideBar"]
 margin_top = 246.0
-margin_right = 185.0
-margin_bottom = 250.0
+margin_right = 247.0
+margin_bottom = 260.0
+text = "Accel:"
+
+[node name="LVBrake" type="Label" parent="MainWindow/OuterMargin/MainContainer/VPSidebar/ScrollContainer/SideBar"]
+margin_top = 268.0
+margin_right = 247.0
+margin_bottom = 282.0
+text = "Brake:"
+
+[node name="LVSteer" type="Label" parent="MainWindow/OuterMargin/MainContainer/VPSidebar/ScrollContainer/SideBar"]
+margin_top = 290.0
+margin_right = 247.0
+margin_bottom = 304.0
+text = "Steer:"
+
+[node name="HSeparator2" type="HSeparator" parent="MainWindow/OuterMargin/MainContainer/VPSidebar/ScrollContainer/SideBar"]
+margin_top = 312.0
+margin_right = 247.0
+margin_bottom = 316.0
 
 [node name="LSelectedObject" type="Label" parent="MainWindow/OuterMargin/MainContainer/VPSidebar/ScrollContainer/SideBar"]
-margin_top = 258.0
-margin_right = 185.0
-margin_bottom = 272.0
+margin_top = 324.0
+margin_right = 247.0
+margin_bottom = 338.0
 text = "Selected Hint Object:"
 
 [node name="ObjTypeContainer" type="HBoxContainer" parent="MainWindow/OuterMargin/MainContainer/VPSidebar/ScrollContainer/SideBar"]
-margin_top = 280.0
-margin_right = 185.0
-margin_bottom = 300.0
+margin_top = 346.0
+margin_right = 247.0
+margin_bottom = 366.0
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -329,16 +347,16 @@ text = "Object Type:"
 
 [node name="ObjType" type="OptionButton" parent="MainWindow/OuterMargin/MainContainer/VPSidebar/ScrollContainer/SideBar/ObjTypeContainer"]
 margin_left = 85.0
-margin_right = 185.0
+margin_right = 247.0
 margin_bottom = 20.0
 hint_tooltip = "Hint objects are special objects that AI drivers \"see\", affecting their behavior."
 size_flags_horizontal = 3
 disabled = true
 
 [node name="LightChannelContainer" type="HBoxContainer" parent="MainWindow/OuterMargin/MainContainer/VPSidebar/ScrollContainer/SideBar"]
-margin_top = 308.0
-margin_right = 185.0
-margin_bottom = 328.0
+margin_top = 374.0
+margin_right = 247.0
+margin_bottom = 394.0
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -351,22 +369,22 @@ text = "Channel:"
 
 [node name="LightChannel" type="OptionButton" parent="MainWindow/OuterMargin/MainContainer/VPSidebar/ScrollContainer/SideBar/LightChannelContainer"]
 margin_left = 59.0
-margin_right = 185.0
+margin_right = 247.0
 margin_bottom = 20.0
 hint_tooltip = "Stop light channel (for stoplights)."
 size_flags_horizontal = 3
 disabled = true
 
 [node name="LObjRotation" type="Label" parent="MainWindow/OuterMargin/MainContainer/VPSidebar/ScrollContainer/SideBar"]
-margin_top = 336.0
-margin_right = 185.0
-margin_bottom = 350.0
+margin_top = 402.0
+margin_right = 247.0
+margin_bottom = 416.0
 text = "Object Rotation: 0"
 
 [node name="ObjRotation" type="HSlider" parent="MainWindow/OuterMargin/MainContainer/VPSidebar/ScrollContainer/SideBar"]
-margin_top = 358.0
-margin_right = 185.0
-margin_bottom = 374.0
+margin_top = 424.0
+margin_right = 247.0
+margin_bottom = 440.0
 max_value = 360.0
 step = 15.0
 editable = false
@@ -375,20 +393,20 @@ tick_count = 5
 ticks_on_borders = true
 
 [node name="HSeparator3" type="HSeparator" parent="MainWindow/OuterMargin/MainContainer/VPSidebar/ScrollContainer/SideBar"]
-margin_top = 382.0
-margin_right = 185.0
-margin_bottom = 386.0
+margin_top = 448.0
+margin_right = 247.0
+margin_bottom = 452.0
 
 [node name="LMouseSens" type="Label" parent="MainWindow/OuterMargin/MainContainer/VPSidebar/ScrollContainer/SideBar"]
-margin_top = 394.0
-margin_right = 185.0
-margin_bottom = 408.0
+margin_top = 460.0
+margin_right = 247.0
+margin_bottom = 474.0
 text = "Mouse Sensitivity"
 
 [node name="MouseSens" type="HSlider" parent="MainWindow/OuterMargin/MainContainer/VPSidebar/ScrollContainer/SideBar"]
-margin_top = 416.0
-margin_right = 185.0
-margin_bottom = 432.0
+margin_top = 482.0
+margin_right = 247.0
+margin_bottom = 498.0
 max_value = 10.0
 step = 0.5
 value = 5.0
@@ -397,16 +415,16 @@ tick_count = 5
 ticks_on_borders = true
 
 [node name="NodesVisible" type="CheckBox" parent="MainWindow/OuterMargin/MainContainer/VPSidebar/ScrollContainer/SideBar"]
-margin_top = 440.0
-margin_right = 185.0
-margin_bottom = 464.0
+margin_top = 506.0
+margin_right = 247.0
+margin_bottom = 530.0
 pressed = true
 text = "Node graph visible"
 
 [node name="RandomSeedContainer" type="HBoxContainer" parent="MainWindow/OuterMargin/MainContainer/VPSidebar/ScrollContainer/SideBar"]
-margin_top = 472.0
-margin_right = 185.0
-margin_bottom = 496.0
+margin_top = 538.0
+margin_right = 247.0
+margin_bottom = 562.0
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -419,21 +437,21 @@ text = "Random Seed:"
 
 [node name="RandomSeed" type="LineEdit" parent="MainWindow/OuterMargin/MainContainer/VPSidebar/ScrollContainer/SideBar/RandomSeedContainer"]
 margin_left = 95.0
-margin_right = 185.0
+margin_right = 247.0
 margin_bottom = 24.0
 hint_tooltip = "The seed to use for RNG. Must be a 16-character hex string. Will not update the seed used unless the string entered in this box is 16 characters long."
 size_flags_horizontal = 3
 
 [node name="LLightTime" type="Label" parent="MainWindow/OuterMargin/MainContainer/VPSidebar/ScrollContainer/SideBar"]
-margin_top = 504.0
-margin_right = 185.0
-margin_bottom = 518.0
+margin_top = 570.0
+margin_right = 247.0
+margin_bottom = 584.0
 text = "Traffic Light Timer: 10"
 
 [node name="LightTime" type="HSlider" parent="MainWindow/OuterMargin/MainContainer/VPSidebar/ScrollContainer/SideBar"]
-margin_top = 526.0
-margin_right = 185.0
-margin_bottom = 542.0
+margin_top = 592.0
+margin_right = 247.0
+margin_bottom = 608.0
 hint_tooltip = "Time between traffic light changes."
 min_value = 10.0
 max_value = 60.0
@@ -444,13 +462,13 @@ tick_count = 6
 ticks_on_borders = true
 
 [node name="StatusContainer" type="MarginContainer" parent="MainWindow/OuterMargin/MainContainer"]
-margin_top = 562.0
-margin_right = 1008.0
-margin_bottom = 584.0
+margin_top = 682.0
+margin_right = 1264.0
+margin_bottom = 704.0
 custom_constants/margin_top = 8
 
 [node name="Label" type="Label" parent="MainWindow/OuterMargin/MainContainer/StatusContainer"]
 margin_top = 8.0
-margin_right = 1008.0
+margin_right = 1264.0
 margin_bottom = 22.0
 text = "Status Text"

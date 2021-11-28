@@ -33,6 +33,9 @@ namespace CSC473.Scripts.Ui
 
         private Label _vehicleClass;
         private Label _vehicleSpeed;
+        private Label _vehicleAccel;
+        private Label _vehicleBrake;
+        private Label _venicleSteer;
 
         private OptionButton _objType;
         private OptionButton _lightChannel;
@@ -121,6 +124,9 @@ namespace CSC473.Scripts.Ui
             
             _vehicleClass = GetNode<Label>(sidebarPath + "/LVehClass");
             _vehicleSpeed = GetNode<Label>(sidebarPath + "/LVehSpeed");
+            _vehicleAccel = GetNode<Label>(sidebarPath + "/LVAccel");
+            _vehicleBrake = GetNode<Label>(sidebarPath + "/LVBrake");
+            _venicleSteer = GetNode<Label>(sidebarPath + "/LVSteer");
 
             _objType = GetNode<OptionButton>(sidebarPath + "/ObjTypeContainer/ObjType");
             _objType.AddItem("Traffic Light", (int) HintObjectType.TrafficLight);
@@ -212,12 +218,12 @@ namespace CSC473.Scripts.Ui
                 }
                 
                 // a vehicle is selected and needs its speed updated
-                UpdateVehicleClassAndSpeed($"{vehicle.ClassName}", 
-                    $"{(int) vehicle.Speed} km/h");
+                UpdateVehicleLabels($"{vehicle.ClassName}", $"{(int) vehicle.Speed} km/h",
+                    $"{vehicle.EngineForce}", $"{vehicle.Brake}", $"{vehicle.Steering}");
             }
             else
             {
-                UpdateVehicleClassAndSpeed(null, null);
+                UpdateVehicleLabels();
             }
         }
 
@@ -364,7 +370,7 @@ namespace CSC473.Scripts.Ui
                     // with the select tool in use, nothing is selected
                     SetNodeControlsEnabled(false);
                     SetHintObjControlsEnabled(false);
-                    UpdateVehicleClassAndSpeed(null, null);
+                    UpdateVehicleLabels();
                 }
 
                 // nothing more to do when nothing is selected
@@ -373,7 +379,7 @@ namespace CSC473.Scripts.Ui
             
             SetNodeControlsEnabled(false);
             SetHintObjControlsEnabled(false);
-            UpdateVehicleClassAndSpeed(null, null);
+            UpdateVehicleLabels();
 
             if (newSelection is PathNode pathNode)
             {
@@ -398,8 +404,8 @@ namespace CSC473.Scripts.Ui
             else if (newSelection is Vehicle vehicle)
             {
                 // a vehicle was selected
-                UpdateVehicleClassAndSpeed($"{vehicle.ClassName}", 
-                    $"{(int) vehicle.Speed} km/h");
+                UpdateVehicleLabels($"{vehicle.ClassName}", $"{(int) vehicle.Speed} km/h",
+                    $"{vehicle.EngineForce}", $"{vehicle.Brake}", $"{vehicle.Steering}");
             }
         }
 
@@ -766,18 +772,14 @@ namespace CSC473.Scripts.Ui
         /// <summary>
         /// Update vehicle detail labels. Pass null to either argument to show N/A
         /// </summary>
-        /// <param name="vehClass"></param>
-        /// <param name="speed"></param>
-        private void UpdateVehicleClassAndSpeed(string vehClass, string speed)
+        private void UpdateVehicleLabels(string vehClass = null, string speed = null, string accel = null, 
+            string brake = null, string steer = null)
         {
-            if (vehClass == null || speed == null)
-            {
-                _vehicleClass.Text = "Class: N/A";
-                _vehicleSpeed.Text = "Speed: N/A";
-            }
-            
             _vehicleClass.Text = $"Class: {vehClass}";
             _vehicleSpeed.Text = $"Speed: {speed}";
+            _vehicleAccel.Text = $"Accel: {accel}";
+            _vehicleBrake.Text = $"Brake: {brake}";
+            _venicleSteer.Text = $"Steer: {steer}";
         }
 
         // // statics
