@@ -270,7 +270,12 @@ namespace CSC473.Scripts
                             
                             // turn in the direction that will result in a greater time to collision
                             steerInfluenceSet = true;
-                            steerInfluence = leftT < rightT ? 1f : -1f;
+                            
+                            // very timid drivers turn the wrong way
+                            if (_agroCoeff < 0.3)
+                                steerInfluence = leftT < rightT ? 1f : -1f;
+                            else
+                                steerInfluence = leftT > rightT ? 1f : -1f;
                         }
                     }
                     else if (collider is Area area)
