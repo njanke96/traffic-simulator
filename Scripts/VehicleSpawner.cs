@@ -329,19 +329,19 @@ namespace CSC473.Scripts
 
             vehicle.PauseMode = PauseModeEnum.Stop;
 
-            PathNode parent = GetParent<PathNode>();
+            PathNode start = GetParent<PathNode>();
             
             // transform vehicle xz to origin of pathnode
-            Vector3 parentOrigin = parent.Transform.origin;
+            Vector3 parentOrigin = start.Transform.origin;
             vehicle.Translate(new Vector3(parentOrigin.x, 0, parentOrigin.z));
             
             // determine travel path
-            PathLayout layout = parent.GetParent<PathLayout>();
-            PathNode end = layout.PickRandomEndNode(parent);
+            PathLayout layout = start.GetParent<PathLayout>();
+            PathNode end = layout.PickRandomEndNode(start);
 
             if (end == null)
             {
-                GD.PushWarning($"Path node {parent.Name} can't spawn a vehicle because there is no path for it to take!");
+                GD.PushWarning($"Path node {start.Name} can't spawn a vehicle because there is no path for it to take!");
                 vehicle.QueueFree();
                 NextSpawn();
                 return;
@@ -349,7 +349,7 @@ namespace CSC473.Scripts
             
             // firstnode is actually the second node of the linked list, the first node of the linked list is where
             // this vehicle spawned
-            LinkedListNode<PathNode> firstNode = layout.GetShortestPathHead(parent, end).Next;
+            LinkedListNode<PathNode> firstNode = layout.GetShortestPathHead(start, end).Next;
             
             // collision rays (unit vectors) for a 120 degree fov (-60 to 60 degrees)
             Vector3 startDir = new Vector3(0, 0, 1f);
@@ -361,7 +361,7 @@ namespace CSC473.Scripts
             }
 
             // vehicle controller
-            AIVehicleController controller = new AIVehicleController(firstNode);
+            AIVehicleController controller = new AIVehicleController(firstNode, start.SpeedLimit);
             
             vehicle.AddChild(controller);
             _vehiclesRoot.AddChild(vehicle);
