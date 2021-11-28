@@ -148,6 +148,7 @@ namespace CSC473.Scripts
                     {
                         // we are done
                         GD.Print($"Vehicle {_vehicle.Name} reached its destination in {_totalElapsed} seconds.");
+                        _stateManager.VehicleReached();
                         _vehicle.QueueFree();
                         return;
                     }

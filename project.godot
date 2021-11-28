@@ -12,6 +12,8 @@ config_version=4
 
 config/name="CSC473"
 run/main_scene="res://MainWindow.tscn"
+config/use_custom_user_dir=true
+config/custom_user_dir_name="tsim"
 config/icon="res://icon.png"
 
 [autoload]

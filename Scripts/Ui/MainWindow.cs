@@ -47,6 +47,11 @@ namespace CSC473.Scripts.Ui
         private PopupMenu _fileMenu;
         private CheckBox _nodesVisible;
 
+        private Label _fps;
+        private Label _vehicleCount;
+        private Label _vps;
+        private CheckBox _enableLogging;
+
         private Label _lightTimerLabel;
         private Slider _lightTimer;
         
@@ -74,6 +79,7 @@ namespace CSC473.Scripts.Ui
                 nameof(_StatusLabelChangeRequested));
 
             _stateManager.Connect(nameof(StateManager.SelectionChanged), this, nameof(_SelectionChanged));
+            _stateManager.Connect(nameof(StateManager.StatsUpdated), this, nameof(_StatsUpdated));
 
             // // get node refs
             _viewport3d = GetNode<Viewport>("OuterMargin/MainContainer/VPSidebar" +
@@ -150,6 +156,12 @@ namespace CSC473.Scripts.Ui
             _lightTimerLabel = GetNode<Label>(sidebarPath + "/LLightTime");
             _lightTimer = GetNode<Slider>(sidebarPath + "/LightTime");
             _lightTimer.Connect("value_changed", this, nameof(_LightTimerChanged));
+            
+            _fps = GetNode<Label>(sidebarPath + "/StatFps");
+            _vehicleCount = GetNode<Label>(sidebarPath + "/StatVehicleCount");
+            _vps = GetNode<Label>(sidebarPath + "/StatVps");
+            _enableLogging = GetNode<CheckBox>(sidebarPath + "/LogCheckbox");
+            _enableLogging.Connect("pressed", this, nameof(_EnableLoggingToggle));
             
             // path node attribute changes
             _nodeType.Connect("item_selected", this, nameof(_PathNodeAttrChanged));
@@ -457,6 +469,18 @@ namespace CSC473.Scripts.Ui
         {
             _lightTimerLabel.Text = $"Traffic light timer: {(int)value}";
             _stateManager.LightTimerTimeout = value;
+        }
+
+        public void _StatsUpdated()
+        {
+            _fps.Text = "FPS: " + _stateManager.FramesPerSecond.ToString(CultureInfo.InvariantCulture);
+            _vehicleCount.Text = "Total Active Vehicles: " + _stateManager.VehicleCount;
+            _vps.Text = "Total Travelled: " + _stateManager.TotalTravelled.ToString(CultureInfo.InvariantCulture);
+        }
+
+        public void _EnableLoggingToggle()
+        {
+            _stateManager.IsLogging = _enableLogging.Pressed;
         }
 
         public void _FileMenuCallback(int id)
