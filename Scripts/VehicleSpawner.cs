@@ -298,9 +298,11 @@ namespace CSC473.Scripts
                 {
                     _lastSpawned = null;
                 }
-                else if (GetParent<Spatial>().Transform.origin.DistanceTo(_lastSpawned.Transform.origin) < 10)
+                else if (GetParent<Spatial>().Transform.origin.DistanceTo(_lastSpawned.Transform.origin) < 20)
+                {
+                    NextSpawn();
                     return;
-                
+                }
             }
             
             // random spawn

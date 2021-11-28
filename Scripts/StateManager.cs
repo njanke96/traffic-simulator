@@ -96,13 +96,11 @@ namespace CSC473.Scripts
             }
         }
         
-        // the traffic light channel that is currently green
+        // the traffic light channel that is currently green, do not set it without also setting _lastGreenChannel
         public int CurrentGreenChannel;
-        public float LightTimerTimeout
-        {
-            get => _trafficTimer.WaitTime;
-            set => _trafficTimer.WaitTime = value;
-        }
+        public float LightTimerTimeout = 10f;
+
+        private int _lastGreenChannel;
 
         public bool ShortestPathNeedsRebuild;
 
@@ -147,8 +145,9 @@ namespace CSC473.Scripts
             // create the traffic light timer
             _trafficTimer = new Timer();
             _trafficTimer.PauseMode = PauseModeEnum.Stop;
+            _trafficTimer.OneShot = false;
             _trafficTimer.Autostart = true;
-            _trafficTimer.WaitTime = 10f;
+            _trafficTimer.WaitTime = LightTimerTimeout;
             _trafficTimer.Connect("timeout", this, nameof(TimerTimeout));
             AddChild(_trafficTimer); 
         }
@@ -184,8 +183,20 @@ namespace CSC473.Scripts
 
         public void TimerTimeout()
         {
+            if (CurrentGreenChannel != -1)
+            {
+                // short delay of all red lights
+                CurrentGreenChannel = -1;
+                _trafficTimer.WaitTime = 3f;
+                _trafficTimer.Start();
+                return;
+            }
+
             // swap green channels
-            CurrentGreenChannel = CurrentGreenChannel == 0 ? 1 : 0;
+            CurrentGreenChannel = _lastGreenChannel == 0 ? 1 : 0;
+            _lastGreenChannel = _lastGreenChannel == 0 ? 1 : 0;
+            _trafficTimer.WaitTime = LightTimerTimeout;
+            _trafficTimer.Start();
         }
 
         public void ResetVehicles()
