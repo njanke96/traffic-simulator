@@ -107,7 +107,7 @@ namespace CSC473.Scripts
         public bool ShortestPathNeedsRebuild;
 
         public string LastSavePath = null;
-        
+
         // stats
         public bool IsLogging;
         private float _logElapsedTime; // seconds

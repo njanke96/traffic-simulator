@@ -488,7 +488,7 @@ text = "Total Travelled: "
 margin_top = 694.0
 margin_right = 235.0
 margin_bottom = 718.0
-hint_tooltip = "Log these statistics over time to a csv file."
+hint_tooltip = "Log these statistics once per second to a csv file for plotting."
 text = "Log to CSV"
 
 [node name="StatusContainer" type="MarginContainer" parent="MainWindow/OuterMargin/MainContainer"]
