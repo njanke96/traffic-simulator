@@ -43,7 +43,7 @@ namespace CSC473.Scripts
             // // constants
             
             // distance to target node required before travelling to next node in meters
-            private const float NodeReachThresh = 1f;
+            private const float NodeReachThresh = 5f;
 
             // smallest angle to the next node required to trigger steering in radians
             private const float SteerThresh = 0.0523599f; // 3 deg
@@ -64,7 +64,7 @@ namespace CSC473.Scripts
             private const float ImminentThresh = 1f;
             
             // direction vector angle offset for comparing collision times
-            private const float CollisionTestAngle = 0.349f; // 20 deg
+            private const float CollisionTestAngle = 0.1745f; // 10 deg
 
             // //
             
