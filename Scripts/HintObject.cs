@@ -79,7 +79,7 @@ namespace CSC473.Scripts
             root.GetNodeOrNull<MeshInstance>("green").MaterialOverride = _greenMat;
             
             // click area signal forwarding
-            root.GetNodeOrNull<Area>("ClickArea").Connect("input_event", _layout,
+            root.GetNodeOrNull<Area>("HintObjArea").Connect("input_event", _layout,
                 nameof(PathLayout._HintObjectClicked), new Godot.Collections.Array(this));
             
             AddChild(root);

@@ -81,6 +81,9 @@ namespace CSC473.Scripts
 
             // total time elapsed since spawn
             private float _totalElapsed;
+            
+            // coefficient of aggression
+            private float _agroCoeff;
 
             public AIVehicleController(LinkedListNode<PathNode> firstNode)
             {
@@ -92,6 +95,8 @@ namespace CSC473.Scripts
             {
                 _stateManager = GetNode<StateManager>("/root/StateManager");
                 _vehicle = GetParent<Vehicle>();
+
+                _agroCoeff = _stateManager.RandInt(20, 100) / 100f;
                 
                 // rotate to face next node on spawn
                 _vehicle.RotateY(AngleToNext());
@@ -203,7 +208,7 @@ namespace CSC473.Scripts
                 
                 // influence on steering/braking
                 float brakeInfluence = 0;
-                float steerInfluence = 0;
+                //float steerInfluence = 0;
                 
                 // process ray collisions
                 foreach (var kv in _collidingObjects)
@@ -211,12 +216,66 @@ namespace CSC473.Scripts
                     Object collider = kv.Key;
                     RayCollisionEvent rce = kv.Value;
                     float bigT;
+
+                    if (rce.Time < ReactionTime)
+                    {
+                        // can't react yet
+                        continue;
+                    }
                     
                     if (collider is Vehicle targetVehicle)
                     {
                         bigT = EstimateCollisionTime(_vehicle.Transform.origin, targetVehicle.Transform.origin, 
                             _vehicle.LinearVelocity, targetVehicle.LinearVelocity, _vehicle.GetApproxRadius(), 
                             targetVehicle.GetApproxRadius());
+                    }
+                    else if (collider is Area area)
+                    {
+                        // hint object?
+                        if (area.Name != "HintObjArea")
+                            continue;
+
+                        HintObject hintObject = area.GetParent().GetParentOrNull<HintObject>();
+                        if (hintObject == null) continue;
+                        
+                        if (hintObject.HintType == HintObjectType.TrafficLight)
+                        {
+                            // we see a traffic light
+                            if (_stateManager.CurrentGreenChannel == hintObject.Channel)
+                            {
+                                // but its green
+                                continue;
+                            }
+
+                            // lateral normal vector of the light
+                            Vector3 latNorm = Vector3.Right.Rotated(Vector3.Up, hintObject.Rotation.y);
+                            
+                            // extends 10m left and right
+                            Vector3 s1 = latNorm * 10;
+                            Vector3 s2 = latNorm * -10;
+                            
+                            // point on the line between s1 and s2 closest to the vehicle
+                            Vector3 lightTarget = Geometry.GetClosestPointToSegment(_vehicle.Transform.origin, s1, s2);
+                            Vector3 between = lightTarget - _vehicle.Transform.origin;
+                            
+                            float distance = rce.Distance;
+                            GD.Print(_vehicle.BodyColor, _vehicle.ClassName, distance);
+                            
+                            // traffic light stop?
+                            if (distance <= 10f)
+                            {
+                                brakeInfluence = 1f;
+                                continue;
+                            }
+                            
+                            // assumption: the vehicle is headed straight at the target (faster calculation)
+                            bigT = distance / _vehicle.LinearVelocity.Length();
+                        }
+                        else
+                        {
+                            // not supported yet.
+                            continue;
+                        }
                     }
                     else
                     {
@@ -250,7 +309,7 @@ namespace CSC473.Scripts
                     }
                     else
                     {
-                        float desiredBraking = 0.8f * time / bigT;
+                        float desiredBraking = (1.5f - _agroCoeff) * time / bigT;
                         if (desiredBraking > brakeInfluence)
                             brakeInfluence = desiredBraking;
                     }
@@ -268,7 +327,7 @@ namespace CSC473.Scripts
                     _vehicle.SetSteerValue(0f);
                 }
 
-                if (brakeInfluence < 0.01)
+                if (Mathf.IsEqualApprox(brakeInfluence, 0.0f, 1e-4f))
                 {
                     // accelerate to speed limit
                     if (_vehicle.Speed < _nextNode.Value.SpeedLimit)

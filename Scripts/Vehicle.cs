@@ -253,7 +253,7 @@ namespace CSC473.Scripts
         // get approx radius of AABB
         public float GetApproxRadius()
         {
-            return 2.0f;
+            return 2.5f;
         }
 
         public ImmediateGeometry GetBoundingBox()
