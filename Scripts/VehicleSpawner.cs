@@ -215,9 +215,9 @@ namespace CSC473.Scripts
         private readonly Node _vehiclesRoot;
 
         private Vehicle _lastSpawned;
-        
-        public float SpawnMin;
-        public float SpawnMax;
+
+        private readonly float _spawnMin;
+        private readonly float _spawnMax;
 
         /// <summary>
         /// Constructor used in code.
@@ -228,8 +228,8 @@ namespace CSC473.Scripts
         public VehicleSpawner(Node vehiclesRoot, float spawnMin, float spawnMax)
         {
             _vehiclesRoot = vehiclesRoot;
-            SpawnMin = spawnMin;
-            SpawnMax = spawnMax;
+            _spawnMin = spawnMin;
+            _spawnMax = spawnMax;
             SetUp();
         }
 
@@ -286,7 +286,7 @@ namespace CSC473.Scripts
         {
             _stateManager = GetNode<StateManager>("/root/StateManager");
             Connect("timeout", this, nameof(_TimerCallback));
-            Start(SpawnMin);
+            Start(_spawnMin);
         }
 
         public void _TimerCallback()
@@ -393,7 +393,7 @@ namespace CSC473.Scripts
         private void NextSpawn()
         {
             // next spawn
-            int spawnTimeoutMillis = _stateManager.RandInt((int) SpawnMin * 1000, (int) SpawnMax * 1000);
+            int spawnTimeoutMillis = _stateManager.RandInt((int) _spawnMin * 1000, (int) _spawnMax * 1000);
             Start(spawnTimeoutMillis / 1000f);
         }
 
