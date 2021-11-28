@@ -312,28 +312,28 @@ namespace CSC473.Scripts
                     // brake influence is not set, accelerate to speed limit
                     if (_vehicle.Speed < _nextNode.Value.SpeedLimit)
                     {
-                        // we are not speeding
-                        _vehicle.SetAccelRatio(0.5f);
+                        // slower than the speed limit
+                        _vehicle.SetAccelRatio(Mathf.Min(0.5f + 0.5f * _agroCoeff, 1f));
                         _vehicle.SetBrakeRatio(0f);
                     }
                     else if (_vehicle.Speed > _nextNode.Value.SpeedLimit + 10)
                     {
-                        // we are speeding too much
+                        // much faster than the speed limit
                         _vehicle.SetAccelRatio(0.0f);
-                        _vehicle.SetBrakeRatio(0.5f);
+                        _vehicle.SetBrakeRatio((1 - _agroCoeff) * 0.75f);
                     }
                     else
                     {
-                        // we are doing fine
+                        // coasting near speed limit
                         _vehicle.SetAccelRatio(0.0f);
                         _vehicle.SetBrakeRatio(0.0f);
                     }
                 }
                 else if (Mathf.IsEqualApprox(brakeInfluence, 0f, 0.01f))
                 {
-                    // coasting, maintain 10 kph until within min stopping distance of something
+                    // coasting, maintain 15 kph until within min stopping distance of something
                     _vehicle.SetBrakeRatio(0f);
-                    _vehicle.SetAccelRatio(_vehicle.Speed < 10 ? 0.3f : 0f);
+                    _vehicle.SetAccelRatio(_vehicle.Speed < 15 ? 0.3f : 0f);
                 }
                 else
                 {
