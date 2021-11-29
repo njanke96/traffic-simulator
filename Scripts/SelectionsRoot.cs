@@ -1,5 +1,4 @@
-﻿using CSC473.Lib;
-using Godot;
+﻿using Godot;
 
 namespace CSC473.Scripts
 {
@@ -23,7 +22,7 @@ namespace CSC473.Scripts
                 return;
 
 
-            if (!(_stateManager.CurrentSelection is Vehicle selectedVehicle)) 
+            if (!(_stateManager.CurrentSelection is Vehicle)) 
                 return;
             
             // bounding box can move
