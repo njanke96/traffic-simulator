@@ -1,6 +1,6 @@
 ﻿# Traffic Behavior Simulator
 CSC 473 Final Project - Fall 2021  
-Nathan Janke V00849980
+Nathan Janke
 
 ---
 
